@@ -1,1 +1,1 @@
-# dfinity-wallet-adapter
+# Dfinity Wallet Adapter

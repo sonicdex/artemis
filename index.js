@@ -1,3 +1,9 @@
-exports.printMsg = function() {
-    console.log("This is a message from the demo package");
-}
+var ArtemisWeb3 = (function (exports) {
+    'use strict';
+    function ping(){
+        console.log('Ping Stat');
+    }
+    exports.ping = ping
+    Object.defineProperty(exports, '__esModule', { value: true });
+    return exports;
+}({}));

@@ -1,6 +1,6 @@
 {
   "name": "artemis-web3-adapter",
-  "version": "0.0.1",
+  "version": "0.0.2",
   "description": "dfinity wallet adapter for connecting different wallets in IC",
   "main": "index.js",
   "workspaces": [
@@ -11,10 +11,20 @@
     "dev": "preconstruct watch",
     "postinstall": "preconstruct dev"
   },
- 
   "author": "",
   "license": "ISC",
+  "dependencies": {
+    "@dfinity/agent": "0.12.2",
+    "@dfinity/candid": "0.12.2",
+    "@dfinity/identity": "0.12.2",
+    "@dfinity/principal": "0.12.2"
+  },
   "devDependencies": {
     "@preconstruct/cli": "^2.3.0"
+  },
+  "preconstruct": {
+    "packages": [
+      "core/*"
+    ]
   }
 }

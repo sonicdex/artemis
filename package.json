@@ -3,9 +3,18 @@
   "version": "0.0.1",
   "description": "dfinity wallet adapter for connecting different wallets in IC",
   "main": "index.js",
+  "workspaces": [
+    "core/*"
+  ],
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "build": "preconstruct build",
+    "dev": "preconstruct watch",
+    "postinstall": "preconstruct dev"
   },
+ 
   "author": "",
-  "license": "ISC"
+  "license": "ISC",
+  "devDependencies": {
+    "@preconstruct/cli": "^2.3.0"
+  }
 }

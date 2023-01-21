@@ -1,5 +1,5 @@
 {
-  "name": "dfinity-wallet-adapter",
+  "name": "artemis",
   "version": "0.0.1",
   "description": "dfinity wallet adapter for connecting different wallets in IC",
   "main": "index.js",

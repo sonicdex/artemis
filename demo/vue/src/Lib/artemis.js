@@ -1,4 +1,4 @@
-import { StoicIdentity } from './core/providers/stoicIdentity'
+import { StoicIdentity } from './stoicIdentity'
 const { Actor, HttpAgent, SignIdentity , AuthClient} = require('@dfinity/agent');
 
 import * as dfn  from '@dfinity/agent'

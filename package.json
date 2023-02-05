@@ -20,12 +20,7 @@
     "@dfinity/principal": "0.12.2"
   },
   "devDependencies": {
-    "@preconstruct/cli": "^2.3.0"
-  },
-  "preconstruct": {
-    "packages": [
-      "core"
-    ]
+    "transpile": "^2.8.0"
   },
   "engines": {
     "npm": ">=7.0.0",

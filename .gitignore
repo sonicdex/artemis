@@ -28,7 +28,6 @@ typings/
 .cache
 .next
 .nuxt
-dist
 .vuepress/dist
 .serverless
 .idea

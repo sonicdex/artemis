@@ -164,6 +164,6 @@ class Artemis {
     }
 }
 if(window){
-  window.artemis = new artemis({ whitelist: ['ryjl3-tyaaa-aaaaa-aaaba-cai'], host: 'https://boundary.ic0.app/'}  );
+  window.artemis = new Artemis({ whitelist: ['ryjl3-tyaaa-aaaaa-aaaba-cai'], host: 'https://boundary.ic0.app/'}  );
 }
 export{Artemis};

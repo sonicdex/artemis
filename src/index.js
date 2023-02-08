@@ -1,122 +1,7 @@
 import {StoicIdentity} from "ic-stoic-identity";
 const { Actor, HttpAgent, SignIdentity, AuthClient } = require('@dfinity/agent');
-const NNS_IDL = ({ IDL }) => {
-    const AccountIdentifier = IDL.Vec(IDL.Nat8);
-    const AccountIdentifier2 = IDL.Text;
-    const AccountBalanceArgs = IDL.Record({ 'account': AccountIdentifier });
-    const Tokens = IDL.Record({ 'e8s': IDL.Nat64 });
-    const Archive = IDL.Record({ 'canister_id': IDL.Principal });
-    const Archives = IDL.Record({ 'archives': IDL.Vec(Archive) });
-    const BlockIndex = IDL.Nat64;
-    const BlockHeight = IDL.Nat64;
-    const GetBlocksArgs = IDL.Record({
-      'start': BlockIndex,
-      'length': IDL.Nat64,
-    });
-    const Memo = IDL.Nat64;
-    const Operation = IDL.Variant({
-      'Burn': IDL.Record({ 'from': AccountIdentifier, 'amount': Tokens }),
-      'Mint': IDL.Record({ 'to': AccountIdentifier, 'amount': Tokens }),
-      'Transfer': IDL.Record({
-        'to': AccountIdentifier,
-        'fee': Tokens,
-        'from': AccountIdentifier,
-        'amount': Tokens,
-      }),
-    });
-    const TimeStamp = IDL.Record({ 'timestamp_nanos': IDL.Nat64 });
-    const Transaction = IDL.Record({
-      'memo': Memo,
-      'operation': IDL.Opt(Operation),
-      'created_at_time': TimeStamp,
-    });
-    const Block = IDL.Record({
-      'transaction': Transaction,
-      'timestamp': TimeStamp,
-      'parent_hash': IDL.Opt(IDL.Vec(IDL.Nat8)),
-    });
-    const BlockRange = IDL.Record({ 'blocks': IDL.Vec(Block) });
-    const QueryArchiveError = IDL.Variant({
-      'BadFirstBlockIndex': IDL.Record({
-        'requested_index': BlockIndex,
-        'first_valid_index': BlockIndex,
-      }),
-      'Other': IDL.Record({
-        'error_message': IDL.Text,
-        'error_code': IDL.Nat64,
-      }),
-    });
-    const QueryArchiveResult = IDL.Variant({
-      'Ok': BlockRange,
-      'Err': QueryArchiveError,
-    });
-    const QueryArchiveFn = IDL.Func(
-      [GetBlocksArgs],
-      [QueryArchiveResult],
-      ['query'],
-    );
-    const QueryBlocksResponse = IDL.Record({
-      'certificate': IDL.Opt(IDL.Vec(IDL.Nat8)),
-      'blocks': IDL.Vec(Block),
-      'chain_length': IDL.Nat64,
-      'first_block_index': BlockIndex,
-      'archived_blocks': IDL.Vec(
-        IDL.Record({
-          'callback': QueryArchiveFn,
-          'start': BlockIndex,
-          'length': IDL.Nat64,
-        })
-      ),
-    });
-    const SubAccount = IDL.Vec(IDL.Nat8);
-    const TransferArgs = IDL.Record({
-      'to': AccountIdentifier,
-      'memo': Memo,
-      'fee': Tokens,
-      'from_subaccount': IDL.Opt(SubAccount),
-      // 'created_at_time' : IDL.Opt(TimeStamp),
-      'amount': Tokens,
-    });
-    const SendArgs = IDL.Record({
-      'to': AccountIdentifier2,
-      'memo': Memo,
-      'fee': Tokens,
-      'from_subaccount': IDL.Opt(SubAccount),
-      'amount': Tokens,
-    });
-    const TransferError = IDL.Variant({
-      'TxTooOld': IDL.Record({ 'allowed_window_nanos': IDL.Nat64 }),
-      'BadFee': IDL.Record({ 'expected_fee': Tokens }),
-      'TxDuplicate': IDL.Record({ 'duplicate_of': BlockIndex }),
-      'TxCreatedInFuture': IDL.Null,
-      'InsufficientFunds': IDL.Record({ 'balance': Tokens }),
-    });
-    const TransferResult = IDL.Variant({
-      'Ok': BlockIndex,
-      'Err': TransferError,
-    });
-    const TransferFeeArg = IDL.Record({});
-    const TransferFee = IDL.Record({ 'transfer_fee': Tokens });
-    return IDL.Service({
-      'account_balance': IDL.Func([AccountBalanceArgs], [Tokens], ['query']),
-      'archives': IDL.Func([], [Archives], ['query']),
-      'decimals': IDL.Func(
-        [],
-        [IDL.Record({ 'decimals': IDL.Nat32 })],
-        ['query'],
-      ),
-      'name': IDL.Func([], [IDL.Record({ 'name': IDL.Text })], ['query']),
-      'query_blocks': IDL.Func(
-        [GetBlocksArgs],
-        [QueryBlocksResponse],
-        ['query'],
-      ),
-      'symbol': IDL.Func([], [IDL.Record({ 'symbol': IDL.Text })], ['query']),
-      'transfer': IDL.Func([TransferArgs], [TransferResult], []),
-      'send_dfx': IDL.Func([SendArgs], [BlockHeight], []),
-      'transfer_fee': IDL.Func([TransferFeeArg], [TransferFee], ['query']),
-    });
-};
+import {NNS_IDL} from './nns.idl'
+
 var wallets = {
     plug: window.ic ? window.ic.plug ? {
         readyState: "Installed",
@@ -191,7 +76,7 @@ var wallets = {
         },
     } : { readyState: 'NotDetected', url: 'https://infinityswap.one/' } : { readyState: 'NotDetected', url: 'https://infinityswap.one/' },
     dfinity: {
-        readyState: "Loadable", url: 'https://www.stoicwallet.com/',
+        readyState: "Loadable", url: 'https://nns.ic0.app/',
         connectWallet: async function (connectObj = { whitelist: [], host: '' }) {
             var identity = new SignIdentity();
             var asd = await identity.getPrincipal()
@@ -200,14 +85,13 @@ var wallets = {
     }
 }
 var ICP_DECIMAL = 100000000;
-
-class artemis {
+class Artemis {
     accountId = false;
     principalId = false;
     walletActive = '';
     provider = false;
     balance = 0;
-    connect = async function (wallet, connectObj = { whitelist:[], host: "https://boundary.ic0.app/" }) {
+    async connect (wallet, connectObj = { whitelist:[], host: "https://boundary.ic0.app/" }) {
       connectObj.whitelist.push('ryjl3-tyaaa-aaaaa-aaaba-cai')
         if (!wallet) return false;
         try {
@@ -229,13 +113,13 @@ class artemis {
             return this.principalId;
         } catch (error) { console.log(error); return false; }
     };
-    disconnect = async function () {
+    async disconnect () {
         var res = this.provider.disConnectWallet();
         localStorage.removeItem("dfinityWallet");
         this.provider = false, this.address = false, this.wallet = '';
         return true;
     };
-    isLoaded = async function () {
+    async isLoaded () {
         return new Promise((resolve, reject) => {
             var intrvl = setInterval(() => {
                 if (this.provider) { clearInterval(intrvl); resolve(true); }
@@ -243,11 +127,11 @@ class artemis {
         })
     };
     wallets = [
-        { id: 'plug', name: 'Plug', icon: '/theme/img/plug.jpg', chain: 'dfinity', adapter: wallets.plug },
-        { id: 'stoic', name: 'Stoic', icon: '/theme/img/stoic.png', chain: 'dfinity', adapter: wallets.stoic },
-        { id: 'infinityswap', name: 'Infinity Wallet', icon: '/theme/img/infinityswap.svg', chain: 'dfinity', adapter: wallets.infinityswap }
+        { id: 'plug', name: 'Plug', icon: 'https://raw.githubusercontent.com/artemisweb3/artemis/main/assets/plug.jpg', chain: 'dfinity', adapter: wallets.plug },
+        { id: 'stoic', name: 'Stoic', icon: 'https://raw.githubusercontent.com/artemisweb3/artemis/main/assets/stoic.png', chain: 'dfinity', adapter: wallets.stoic },
+        { id: 'infinityswap', name: 'Infinity Wallet', icon: 'https://raw.githubusercontent.com/artemisweb3/artemis/main/assets/infinityswap.svg', chain: 'dfinity', adapter: wallets.infinityswap }
     ];
-    getWalletBalance = async function () {
+    async getWalletBalance () {
         if (!this.accountId) return 0;
         var requestOptions = { method: 'GET', redirect: 'follow' };
         var _resp = await fetch("https://ledger-api.internetcomputer.org/accounts/" + this.accountId, requestOptions);
@@ -260,7 +144,7 @@ class artemis {
         }
         return this.balance
     };
-    requestICPTransfer = async function(transferRequest){
+    async requestICPTransfer(transferRequest){
         return new Promise(async (resolve, reject) => {
             var IDL = NNS_IDL;
             var NNS_CANISTER_ID = 'ryjl3-tyaaa-aaaaa-aaaba-cai';
@@ -270,7 +154,7 @@ class artemis {
             reject(false)
         })
     };
-    constructor(connectObj = { whitelist: ['nrq3s-cyaaa-aaaah-aby5a-cai', 'zlja6-aqaaa-aaaah-abxfq-cai', 'ryjl3-tyaaa-aaaaa-aaaba-cai'], host: "https://boundary.ic0.app/", }) {
+    constructor(connectObj = { whitelist: ['ryjl3-tyaaa-aaaaa-aaaba-cai'], host: "https://boundary.ic0.app/", }) {
         var walletConnected = localStorage.getItem('dfinityWallet');
         (async () => {
             var selectedWallet = this.wallets.find(o => o.id == walletConnected);
@@ -280,6 +164,6 @@ class artemis {
     }
 }
 if(window){
-  window.artemis = new artemis({ whitelist: ['ryjl3-tyaaa-aaaaa-aaaba-cai'], host: 'https://boundary.ic0.app/'}  );
+  window.artemis = new Artemis({ whitelist: ['ryjl3-tyaaa-aaaaa-aaaba-cai'], host: 'https://boundary.ic0.app/'}  );
 }
-export default artemis;
+export{Artemis};

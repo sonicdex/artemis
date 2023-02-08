@@ -1,3 +1,3 @@
-import artemis from './src'
+import artemis from './src/'
 
 export default artemis;

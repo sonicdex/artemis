@@ -1,18 +1,22 @@
 {
+  "private": true,
   "name": "artemis-web3-adapter",
   "version": "0.0.8",
   "description": "dfinity wallet adapter for connecting different wallets in IC",
-  "main": "index.js",
+  "main": "dist/bundle.js",
+  "module": "src/index.js",
+  
   "scripts": {
     "build": "webpack --mode production"
   },
   "author": "code_lion",
   "license": "ISC",
   "dependencies": {
-    "@dfinity/agent": "0.12.2",
-    "@dfinity/candid": "0.12.2",
-    "@dfinity/identity": "0.12.2",
-    "@dfinity/principal": "0.12.2"
+    "@dfinity/agent": "^0.15.3",
+    "@dfinity/auth-client": "^0.15.3",
+    "@dfinity/principal": "^0.15.3",
+    "buffer-crc32": "^0.2.13",
+    "crypto-js": "^4.1.1"
   },
   "devDependencies": {
     "ic-stoic-identity": "^2.0.0",

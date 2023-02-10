@@ -11,6 +11,7 @@
   "author": "code_lion",
   "license": "ISC",
   "dependencies": {
+    "ic-stoic-identity": "^2.0.0",
     "@dfinity/agent": "^0.15.3",
     "@dfinity/auth-client": "^0.15.3",
     "@dfinity/principal": "^0.15.3",
@@ -18,7 +19,6 @@
     "crypto-js": "^4.1.1"
   },
   "devDependencies": {
-    "ic-stoic-identity": "^2.0.0",
     "webpack": "^5.75.0",
     "webpack-cli": "^5.0.1"
   },

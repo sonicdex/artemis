@@ -1,5 +1,4 @@
 {
-  "private": true,
   "name": "artemis-web3-adapter",
   "version": "0.0.9",
   "description": "dfinity wallet adapter for connecting different wallets in IC",

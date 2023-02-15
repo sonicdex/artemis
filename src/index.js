@@ -181,7 +181,7 @@ class Artemis {
         return new Promise(async (resolve, reject) => {
             var IDL = NNS_IDL;
             var NNS_CANISTER_ID = 'ryjl3-tyaaa-aaaaa-aaaba-cai';
-            var actor = await this.provider.createActor({ canisterId: NNS_CANISTER_ID, interfaceFactory: IDL });
+            var actor = await this.getCanisterActor( NNS_CANISTER_ID , IDL);
             const blockHeight = await actor.send_dfx(transferRequest).catch(err => { reject(err) });
             if (blockHeight) resolve(blockHeight)
             reject(false)

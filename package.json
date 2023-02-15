@@ -1,6 +1,6 @@
 {
   "name": "artemis-web3-adapter",
-  "version": "0.0.9",
+  "version": "0.0.10",
   "description": "dfinity wallet adapter for connecting different wallets in IC",
   "main": "dist/bundle.js",
   "module": "src/index.js",

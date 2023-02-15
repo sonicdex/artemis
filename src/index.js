@@ -1,9 +1,10 @@
 import { StoicIdentity } from "ic-stoic-identity";
-const { Actor, HttpAgent, SignIdentity } = require('@dfinity/agent');
+const { Actor, HttpAgent, SignIdentity , AnonymousIdentity} = require('@dfinity/agent');
 import { AuthClient } from "@dfinity/auth-client"
 import { NNS_IDL } from './nns.idl'
 import { getAccountIdentifier } from './identifier-utils'
 
+const pubAgent = new HttpAgent({ AnonymousIdentity, host: "https://boundary.ic0.app/" })
 
 var wallets = {
     plug: window.ic ? window.ic.plug ? {
@@ -44,6 +45,10 @@ var wallets = {
             getAcnts = JSON.parse(getAcnts);
             this.agent = new HttpAgent({ identity, host: connectObj.host });
             this.createActor = function (interfaceFactory, dconfig) {
+                console.log(Actor.createActor)
+
+                dconfig
+
                 return Actor.createActor(interfaceFactory, dconfig);
             };
             this.createAgent = function () {
@@ -117,6 +122,7 @@ class Artemis {
     walletActive = '';
     provider = false;
     balance = 0;
+    canisterActors={};
     async connect(wallet, connectObj = { whitelist: [], host: "https://boundary.ic0.app/" }) {
         connectObj.whitelist.push('ryjl3-tyaaa-aaaaa-aaaba-cai')
         if (!wallet) return false;
@@ -180,6 +186,24 @@ class Artemis {
             if (blockHeight) resolve(blockHeight)
             reject(false)
         })
+    };
+    async getCanisterActor(canisterId, idl, isAnon = false) {
+        let actor = false;
+        if (isAnon) {
+            return actor = await Actor.createActor(idl, { agent: pubAgent, canisterId: canisterId })
+        }
+        if(!this.provider.agent) return false;
+        if (this.walletActive == 'plug' || this.walletActive == 'infinityswap') {
+            if (this.canisterActors[canisterId]) {
+                actor = await this.canisterActors[canisterId];
+            } else {
+                actor = await this.provider.createActor({ canisterId: canisterId, interfaceFactory: idl });
+                this.canisterActors[canisterId] = actor;
+            }
+        } else if (this.walletActive == 'stoic' || this.walletActive == 'dfintiy') {
+            actor = await Actor.createActor(idl, { agent: this.provider.agent, canisterId: canisterId });
+        }
+        return actor;
     };
     constructor(connectObj = { whitelist: ['ryjl3-tyaaa-aaaaa-aaaba-cai'], host: "https://boundary.ic0.app/", }) {
         var walletConnected = localStorage.getItem('dfinityWallet');

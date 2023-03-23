@@ -123,6 +123,7 @@ class Artemis {
     provider = false;
     balance = 0;
     canisterActors={};
+    anoncanisterActors=[];
     async connect(wallet, connectObj = { whitelist: [], host: "https://boundary.ic0.app/" }) {
         connectObj.whitelist.push('ryjl3-tyaaa-aaaaa-aaaba-cai')
         if (!wallet) return false;
@@ -190,7 +191,10 @@ class Artemis {
     async getCanisterActor(canisterId, idl, isAnon = false) {
         let actor = false;
         if (isAnon) {
-            return actor = await Actor.createActor(idl, { agent: pubAgent, canisterId: canisterId })
+            if (this.anoncanisterActors[canisterId])
+                return actor = this.canisterActors[canisterId]
+            else
+                return actor = await Actor.createActor(idl, { agent: pubAgent, canisterId: canisterId })
         }
         if(!this.provider.agent) return false;
         if (this.walletActive == 'plug' || this.walletActive == 'infinityswap') {

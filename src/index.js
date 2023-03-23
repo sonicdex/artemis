@@ -7,15 +7,14 @@ var wallets = {
         readyState: "Installed",
         icon: '',
         connectWallet: async function (connectObj = { whitelist: [], host: '', }) {
-          console.log
             var publicKey = false, prinObj = false;
-            var isConnected = () => {
-                return new Promise(async (resolve) => {
-                    setTimeout(() => { resolve(false); }, 1000);
-                    var s = await window.ic.plug.isConnected(); resolve(s);
-                })
-            };
-            var result = await isConnected();
+            // var isConnected = () => {
+            //     return new Promise(async (resolve) => {
+            //         setTimeout(() => { resolve(false); }, 1000);
+            //         var s = await window.ic.plug.isConnected(); resolve(s);
+            //     })
+            // };
+            var result = await window.ic.plug.isConnected();
             try {
                 if (result) {
                     await window.ic.plug.createAgent(connectObj)
@@ -93,7 +92,7 @@ class Artemis {
     balance = 0;
     async connect (wallet, connectObj = { whitelist:[], host: "https://boundary.ic0.app/" }) {
       connectObj.whitelist.push('ryjl3-tyaaa-aaaaa-aaaba-cai')
-        if (!wallet) return false;
+        if (!wallet) return '';
         try {
             var selectedWallet = this.wallets.find(o => o.id == wallet);
             if (!selectedWallet) return false;
@@ -111,7 +110,7 @@ class Artemis {
                 window.open(selectedWallet.adapter.url, '_blank');
             }
             return this.principalId;
-        } catch (error) { console.log(error); return false; }
+        } catch (error) { return ''; }
     };
     async disconnect () {
         var res = this.provider.disConnectWallet();

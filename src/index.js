@@ -166,4 +166,4 @@ class Artemis {
 if(window){
   window.artemis = new Artemis({ whitelist: ['ryjl3-tyaaa-aaaaa-aaaba-cai'], host: 'https://boundary.ic0.app/'}  );
 }
-export{Artemis};
+export default Artemis;

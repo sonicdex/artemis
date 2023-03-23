@@ -19,7 +19,7 @@ var wallets = {
                     var s = await window.ic.plug.isConnected(); resolve(s);
                 })
             };
-            var result = await isConnected();
+            var result = await window.ic.plug.isConnected();
             try {
                 if (result) {
                     await window.ic.plug.createAgent(connectObj)

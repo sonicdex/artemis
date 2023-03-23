@@ -1,20 +1,25 @@
-import {StoicIdentity} from "ic-stoic-identity";
-const { Actor, HttpAgent, SignIdentity, AuthClient } = require('@dfinity/agent');
-import {NNS_IDL} from './nns.idl'
+import { StoicIdentity } from "ic-stoic-identity";
+const { Actor, HttpAgent, SignIdentity , AnonymousIdentity} = require('@dfinity/agent');
+import { AuthClient } from "@dfinity/auth-client"
+import { NNS_IDL } from './nns.idl'
+import { getAccountIdentifier } from './identifier-utils'
+
+const pubAgent = new HttpAgent({ AnonymousIdentity, host: "https://boundary.ic0.app/" })
 
 var wallets = {
     plug: window.ic ? window.ic.plug ? {
         readyState: "Installed",
         icon: '',
         connectWallet: async function (connectObj = { whitelist: [], host: '', }) {
+            console.log
             var publicKey = false, prinObj = false;
-            // var isConnected = () => {
-            //     return new Promise(async (resolve) => {
-            //         setTimeout(() => { resolve(false); }, 1000);
-            //         var s = await window.ic.plug.isConnected(); resolve(s);
-            //     })
-            // };
-            var result = await window.ic.plug.isConnected();
+            var isConnected = () => {
+                return new Promise(async (resolve) => {
+                    setTimeout(() => { resolve(false); }, 1000);
+                    var s = await window.ic.plug.isConnected(); resolve(s);
+                })
+            };
+            var result = await isConnected();
             try {
                 if (result) {
                     await window.ic.plug.createAgent(connectObj)
@@ -40,6 +45,10 @@ var wallets = {
             getAcnts = JSON.parse(getAcnts);
             this.agent = new HttpAgent({ identity, host: connectObj.host });
             this.createActor = function (interfaceFactory, dconfig) {
+                console.log(Actor.createActor)
+
+                dconfig
+
                 return Actor.createActor(interfaceFactory, dconfig);
             };
             this.createAgent = function () {
@@ -75,11 +84,34 @@ var wallets = {
         },
     } : { readyState: 'NotDetected', url: 'https://infinityswap.one/' } : { readyState: 'NotDetected', url: 'https://infinityswap.one/' },
     dfinity: {
-        readyState: "Loadable", url: 'https://nns.ic0.app/',
+        readyState: "Loadable", url: "https://identity.ic0.app",
         connectWallet: async function (connectObj = { whitelist: [], host: '' }) {
-            var identity = new SignIdentity();
-            var asd = await identity.getPrincipal()
-            console.log(identity, asd)
+            var authClient = await AuthClient.create();
+            var isConnected = await authClient.isAuthenticated();
+            var self = this;
+            var returnData={}
+            if (!isConnected) {
+                var conn = await authClient.login({ identityProvider: 'https://identity.ic0.app', onSuccess: async () => {returnData = await continueLogin(); }});
+            } else {
+                returnData = await continueLogin();
+            }
+            
+            async function continueLogin() {
+                var identity = await authClient.getIdentity();
+                var principal = identity?.getPrincipal();
+                self.agent = new HttpAgent({ identity: identity, host: connectObj.host });
+                var sid =  getAccountIdentifier(identity?.getPrincipal().toString());
+                self.createActor = function (interfaceFactory, dconfig) {
+                    return Actor.createActor(interfaceFactory, dconfig);
+                };
+                self.createAgent = function () {
+                    return new HttpAgent({ identity: identity, host: connectObj.host });
+                };
+                self.getPrincipal = function () { return identity.getPrincipal() }
+                self.disConnectWallet = async function () { await authClient.logout() }
+                return { accountId: sid, principalId: principal.toString() }
+            }
+            return returnData;
         }
     }
 }
@@ -90,35 +122,36 @@ class Artemis {
     walletActive = '';
     provider = false;
     balance = 0;
-    async connect (wallet, connectObj = { whitelist:[], host: "https://boundary.ic0.app/" }) {
-      connectObj.whitelist.push('ryjl3-tyaaa-aaaaa-aaaba-cai')
-        if (!wallet) return '';
+    canisterActors={};
+    async connect(wallet, connectObj = { whitelist: [], host: "https://boundary.ic0.app/" }) {
+        connectObj.whitelist.push('ryjl3-tyaaa-aaaaa-aaaba-cai')
+        if (!wallet) return false;
         try {
             var selectedWallet = this.wallets.find(o => o.id == wallet);
             if (!selectedWallet) return false;
             if (selectedWallet.adapter.readyState == "Installed" || selectedWallet.adapter.readyState == "Loadable") {
                 var p = await selectedWallet.adapter.connectWallet(connectObj);
                 if (!p) return false;
-                this.principalId = p.principalId; this.accountId = p.accountId;this.walletActive = wallet;
+                this.principalId = p.principalId; this.accountId = p.accountId; this.walletActive = wallet;
                 this.provider = selectedWallet.adapter;
-                if(!!p.stoicAccounts){localStorage.setItem("stoicAccounts", p.stoicAccounts.length || 0);}
-                localStorage.setItem("dfinityWallet", this.walletActive );
-                var event =  new CustomEvent('walletConnected');
+                if (!!p.stoicAccounts) { localStorage.setItem("stoicAccounts", p.stoicAccounts.length || 0); }
+                localStorage.setItem("dfinityWallet", this.walletActive);
+                var event = new CustomEvent('dfinityWalletConnected');
                 window.dispatchEvent(event, wallet);
                 this.getWalletBalance();
             } else if (selectedWallet.adapter.readyState == 'NotDetected') {
                 window.open(selectedWallet.adapter.url, '_blank');
             }
             return this.principalId;
-        } catch (error) { return ''; }
+        } catch (error) {  return false; }
     };
-    async disconnect () {
+    async disconnect() {
         var res = this.provider.disConnectWallet();
         localStorage.removeItem("dfinityWallet");
         this.provider = false, this.address = false, this.wallet = '';
         return true;
     };
-    async isLoaded () {
+    async isLoaded() {
         return new Promise((resolve, reject) => {
             var intrvl = setInterval(() => {
                 if (this.provider) { clearInterval(intrvl); resolve(true); }
@@ -126,11 +159,12 @@ class Artemis {
         })
     };
     wallets = [
-        { id: 'plug', name: 'Plug', icon: 'https://raw.githubusercontent.com/artemisweb3/artemis/main/assets/plug.jpg', chain: 'dfinity', adapter: wallets.plug },
-        { id: 'stoic', name: 'Stoic', icon: 'https://raw.githubusercontent.com/artemisweb3/artemis/main/assets/stoic.png', chain: 'dfinity', adapter: wallets.stoic },
-        { id: 'infinityswap', name: 'Infinity Wallet', icon: 'https://raw.githubusercontent.com/artemisweb3/artemis/main/assets/infinityswap.svg', chain: 'dfinity', adapter: wallets.infinityswap }
+        { id: 'plug', name: 'Plug Wallet', icon: 'https://raw.githubusercontent.com/artemisweb3/artemis/main/assets/plug.jpg', adapter: wallets.plug },
+        { id: 'stoic', name: 'Stoic Wallet', icon: 'https://raw.githubusercontent.com/artemisweb3/artemis/main/assets/stoic.png', adapter: wallets.stoic },
+        { id: 'infinityswap', name: 'Infinity Wallet', icon: 'https://raw.githubusercontent.com/artemisweb3/artemis/main/assets/infinityswap.svg', adapter: wallets.infinityswap },
+        { id: 'dfinity', name: "Internet Identity", icon: 'https://raw.githubusercontent.com/artemisweb3/artemis/main/assets/dfinity.svg', adapter: wallets.dfinity },
     ];
-    async getWalletBalance () {
+    async getWalletBalance() {
         if (!this.accountId) return 0;
         var requestOptions = { method: 'GET', redirect: 'follow' };
         var _resp = await fetch("https://ledger-api.internetcomputer.org/accounts/" + this.accountId, requestOptions);
@@ -143,26 +177,44 @@ class Artemis {
         }
         return this.balance
     };
-    async requestICPTransfer(transferRequest){
+    async requestICPTransfer(transferRequest) {
         return new Promise(async (resolve, reject) => {
             var IDL = NNS_IDL;
             var NNS_CANISTER_ID = 'ryjl3-tyaaa-aaaaa-aaaba-cai';
-            var actor =  await this.provider.createActor( { canisterId: NNS_CANISTER_ID, interfaceFactory: IDL } );
+            var actor = await this.getCanisterActor( NNS_CANISTER_ID , IDL);
             const blockHeight = await actor.send_dfx(transferRequest).catch(err => { reject(err) });
             if (blockHeight) resolve(blockHeight)
             reject(false)
         })
+    };
+    async getCanisterActor(canisterId, idl, isAnon = false) {
+        let actor = false;
+        if (isAnon) {
+            return actor = await Actor.createActor(idl, { agent: pubAgent, canisterId: canisterId })
+        }
+        if(!this.provider.agent) return false;
+        if (this.walletActive == 'plug' || this.walletActive == 'infinityswap') {
+            if (this.canisterActors[canisterId]) {
+                actor = await this.canisterActors[canisterId];
+            } else {
+                actor = await this.provider.createActor({ canisterId: canisterId, interfaceFactory: idl });
+                this.canisterActors[canisterId] = actor;
+            }
+        } else if (this.walletActive == 'stoic' || this.walletActive == 'dfintiy') {
+            actor = await Actor.createActor(idl, { agent: this.provider.agent, canisterId: canisterId });
+        }
+        return actor;
     };
     constructor(connectObj = { whitelist: ['ryjl3-tyaaa-aaaaa-aaaba-cai'], host: "https://boundary.ic0.app/", }) {
         var walletConnected = localStorage.getItem('dfinityWallet');
         (async () => {
             var selectedWallet = this.wallets.find(o => o.id == walletConnected);
             if (!selectedWallet) return false;
-            var data = await this.connect(walletConnected , connectObj);
+            var data = await this.connect(walletConnected, connectObj);
         })
     }
 }
-if(window){
-  window.artemis = new Artemis({ whitelist: ['ryjl3-tyaaa-aaaaa-aaaba-cai'], host: 'https://boundary.ic0.app/'}  );
+if (window) {
+    window.artemis = new Artemis({ whitelist: ['ryjl3-tyaaa-aaaaa-aaaba-cai'], host: 'https://boundary.ic0.app/' });
 }
 export default Artemis;

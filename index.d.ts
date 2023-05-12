@@ -8,7 +8,8 @@ export default class Artemis {
     canisterActors:{};
     connectedWalletInfo:{ id: string , icon:string , name:string};
     connect(wallet: string, connectObj?:any): string;
-    disconnect():boolean;
+    autoConnect(connectObj?:any):any;
+    disconnect():boolean{};
     isLoaded():any;
     getWalletBalance():number;
     requestICPTransfer(transferRequest:any):any;

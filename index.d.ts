@@ -6,6 +6,7 @@ export default class Artemis {
     balance:number;
     wallets:[];
     canisterActors:{};
+    connectedWalletInfo:{ id: string , icon:string , name:string};
     connect(wallet: string, connectObj?:any): string;
     disconnect():boolean;
     isLoaded():boolean;

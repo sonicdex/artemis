@@ -11,7 +11,6 @@ const pubAgent = new HttpAgent({ AnonymousIdentity, host: HOSTURL })
 var wallets = {
     plug: window.ic ? window.ic.plug ? {
         readyState: "Installed",
-        icon: '',
         connectWallet: async function (connectObj = { whitelist: [], host: '', }) {
             var publicKey = false, prinObj = false;
             var isConnected = () => {
@@ -121,8 +120,8 @@ class Artemis {
     balance = 0;
     canisterActors={};
     anoncanisterActors=[];
+    connectedWalletInfo={};
     async connect(wallet, connectObj = { whitelist: [], host: HOSTURL }) {
-        console.log(wallet);
         connectObj.whitelist.push('ryjl3-tyaaa-aaaaa-aaaba-cai')
         if (!wallet) return false;
         try {
@@ -133,6 +132,8 @@ class Artemis {
                 if (!p) return false;
                 this.principalId = p.principalId; this.accountId = p.accountId; this.walletActive = wallet;
                 this.provider = selectedWallet.adapter;
+                this.connectedWalletInfo = selectedWallet;
+
                 if (!!p.stoicAccounts) { localStorage.setItem("stoicAccounts", p.stoicAccounts.length || 0); }
                 localStorage.setItem("dfinityWallet", this.walletActive);
                 var event = new CustomEvent('dfinityWalletConnected');

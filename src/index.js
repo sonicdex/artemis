@@ -1,5 +1,5 @@
 import { StoicIdentity } from "ic-stoic-identity";
-const { Actor, HttpAgent, SignIdentity , AnonymousIdentity} = require('@dfinity/agent');
+const { Actor, HttpAgent, SignIdentity, AnonymousIdentity } = require('@dfinity/agent');
 import { AuthClient } from "@dfinity/auth-client"
 import { NNS_IDL } from './nns.idl'
 import { getAccountIdentifier } from './identifier-utils'
@@ -85,18 +85,18 @@ var wallets = {
             var authClient = await AuthClient.create();
             var isConnected = await authClient.isAuthenticated();
             var self = this;
-            var returnData={}
+            var returnData = {}
             if (!isConnected) {
-                var conn = await authClient.login({ identityProvider: 'https://identity.ic0.app', onSuccess: async () => {returnData = await continueLogin(); }});
+                var conn = await authClient.login({ identityProvider: 'https://identity.ic0.app', onSuccess: async () => { returnData = await continueLogin(); } });
             } else {
                 returnData = await continueLogin();
             }
-            
+
             async function continueLogin() {
                 var identity = await authClient.getIdentity();
                 var principal = identity?.getPrincipal();
                 self.agent = new HttpAgent({ identity: identity, host: connectObj.host });
-                var sid =  getAccountIdentifier(identity?.getPrincipal().toString());
+                var sid = getAccountIdentifier(identity?.getPrincipal().toString());
                 self.createActor = function (interfaceFactory, dconfig) {
                     return Actor.createActor(interfaceFactory, dconfig);
                 };
@@ -118,9 +118,9 @@ class Artemis {
     walletActive = '';
     provider = false;
     balance = 0;
-    canisterActors={};
-    anoncanisterActors=[];
-    connectedWalletInfo={};
+    canisterActors = {};
+    anoncanisterActors = [];
+    connectedWalletInfo = {};
     async connect(wallet, connectObj = { whitelist: [], host: HOSTURL }) {
         connectObj.whitelist.push('ryjl3-tyaaa-aaaaa-aaaba-cai')
         if (!wallet) return false;
@@ -132,8 +132,7 @@ class Artemis {
                 if (!p) return false;
                 this.principalId = p.principalId; this.accountId = p.accountId; this.walletActive = wallet;
                 this.provider = selectedWallet.adapter;
-                this.connectedWalletInfo = selectedWallet;
-
+                this.connectedWalletInfo = {id: selectedWallet.id,  icon: selectedWallet.icon, name: selectedWallet.name };
                 if (!!p.stoicAccounts) { localStorage.setItem("stoicAccounts", p.stoicAccounts.length || 0); }
                 localStorage.setItem("dfinityWallet", this.walletActive);
                 var event = new CustomEvent('dfinityWalletConnected');
@@ -143,7 +142,7 @@ class Artemis {
                 window.open(selectedWallet.adapter.url, '_blank');
             }
             return this.principalId;
-        } catch (error) {  return false; }
+        } catch (error) { return false; }
     };
     async disconnect() {
         var res = this.provider.disConnectWallet();
@@ -181,7 +180,7 @@ class Artemis {
         return new Promise(async (resolve, reject) => {
             var IDL = NNS_IDL;
             var NNS_CANISTER_ID = 'ryjl3-tyaaa-aaaaa-aaaba-cai';
-            var actor = await this.getCanisterActor( NNS_CANISTER_ID , IDL);
+            var actor = await this.getCanisterActor(NNS_CANISTER_ID, IDL);
             const blockHeight = await actor.send_dfx(transferRequest).catch(err => { reject(err) });
             if (blockHeight) resolve(blockHeight)
             reject(false)
@@ -195,7 +194,7 @@ class Artemis {
             else
                 return actor = await Actor.createActor(idl, { agent: pubAgent, canisterId: canisterId })
         }
-        if(!this.provider.agent) return false;
+        if (!this.provider.agent) return false;
         if (this.walletActive == 'plug' || this.walletActive == 'infinityswap') {
             if (this.canisterActors[canisterId]) {
                 actor = await this.canisterActors[canisterId];

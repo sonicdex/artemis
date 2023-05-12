@@ -207,6 +207,16 @@ class Artemis {
         }
         return actor;
     };
+    async autoConnect(connectObj = { whitelist: ['ryjl3-tyaaa-aaaaa-aaaba-cai'], host: HOSTURL, }){
+
+        if(connectObj.whitelist.find(x=> 'ryjl3-tyaaa-aaaaa-aaaba-cai' )){}
+
+        var walletConnected = localStorage.getItem('dfinityWallet');
+        var selectedWallet = this.wallets.find(o => o.id == walletConnected);
+        if (!selectedWallet) return false;
+        var data = await this.connect(walletConnected, connectObj);
+        return data;
+    }
     constructor(connectObj = { whitelist: ['ryjl3-tyaaa-aaaaa-aaaba-cai'], host: HOSTURL, }) {
         var walletConnected = localStorage.getItem('dfinityWallet');
         (async () => {

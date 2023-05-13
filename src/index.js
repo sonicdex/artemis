@@ -70,7 +70,7 @@ var wallets = {
             this.agent = window.ic.bitfinityWallet.agent;
 
             this.getPrincipal = async function () { return window.ic.bitfinityWallet.getPrincipal() }
-            this.createActor = async function (t1, t2) { return window.ic.bitfinityWallet.createActor(t1, t2) };
+            this.createActor = async function (t1) { return window.ic.bitfinityWallet.createActor(t1) };
             var prinObj = await this.getPrincipal();
             var acntid = await window.ic.bitfinityWallet.getAccountID()
             return { accountId: acntid, principalId: prinObj.toString() }
@@ -78,7 +78,7 @@ var wallets = {
         disConnectWallet: async function () {
             await window.ic.bitfinityWallet.disconnect();
         },
-    } : { readyState: 'NotDetected', url: 'https://infinityswap.one/' } : { readyState: 'NotDetected', url: 'https://infinityswap.one/' },
+    } : { readyState: 'NotDetected', url: 'https://wallet.infinityswap.one/' } : { readyState: 'NotDetected', url: 'https://wallet.infinityswap.one/' },
     dfinity: {
         readyState: "Loadable", url: "https://identity.ic0.app",
         connectWallet: async function (connectObj = { whitelist: [], host: '' }) {
@@ -121,8 +121,13 @@ class Artemis {
     canisterActors = {};
     anoncanisterActors = [];
     connectedWalletInfo = {};
+    _cleanUpConnObj(connectObj) {
+        connectObj.whitelist.push('ryjl3-tyaaa-aaaaa-aaaba-cai');
+        connectObj.whitelist = Array.from(new Set([...connectObj.whitelist]));
+        return connectObj;
+    }
     async connect(wallet, connectObj = { whitelist: [], host: HOSTURL }) {
-        connectObj.whitelist.push('ryjl3-tyaaa-aaaaa-aaaba-cai')
+        connectObj = this._cleanUpConnObj(connectObj);
         if (!wallet) return false;
         try {
             var selectedWallet = this.wallets.find(o => o.id == wallet);
@@ -132,7 +137,7 @@ class Artemis {
                 if (!p) return false;
                 this.principalId = p.principalId; this.accountId = p.accountId; this.walletActive = wallet;
                 this.provider = selectedWallet.adapter;
-                this.connectedWalletInfo = {id: selectedWallet.id,  icon: selectedWallet.icon, name: selectedWallet.name };
+                this.connectedWalletInfo = { id: selectedWallet.id, icon: selectedWallet.icon, name: selectedWallet.name };
                 if (!!p.stoicAccounts) { localStorage.setItem("stoicAccounts", p.stoicAccounts.length || 0); }
                 localStorage.setItem("dfinityWallet", this.walletActive);
                 var event = new CustomEvent('dfinityWalletConnected');
@@ -160,7 +165,7 @@ class Artemis {
     wallets = [
         { id: 'plug', name: 'Plug Wallet', icon: 'https://raw.githubusercontent.com/sonicdex/artemis/main/assets/plug.jpg', adapter: wallets.plug },
         { id: 'stoic', name: 'Stoic Wallet', icon: 'https://raw.githubusercontent.com/sonicdex/artemis/main/assets/stoic.png', adapter: wallets.stoic },
-        { id: 'bitfinity', name: 'Bitfinity Wallet', icon: 'https://raw.githubusercontent.com/sonicdex/artemis/main/assets/infinityswap.svg', adapter: wallets.bitfinity },
+        { id: 'bitfinity', name: 'Bitfinity Wallet', icon: 'https://raw.githubusercontent.com/sonicdex/artemis/main/assets/bitfinity.svg', adapter: wallets.bitfinity },
         { id: 'dfinity', name: "Internet Identity", icon: 'https://raw.githubusercontent.com/sonicdex/artemis/main/assets/dfinity.svg', adapter: wallets.dfinity },
     ];
     async getWalletBalance() {
@@ -193,22 +198,24 @@ class Artemis {
                 return actor = this.canisterActors[canisterId]
             else
                 return actor = await Actor.createActor(idl, { agent: pubAgent, canisterId: canisterId })
-        }
-        if (!this.provider.agent) return false;
-        if (this.walletActive == 'plug' || this.walletActive == 'infinityswap') {
-            if (this.canisterActors[canisterId]) {
+        }else{
+            if(this.canisterActors[canisterId]){
                 actor = await this.canisterActors[canisterId];
-            } else {
+            }else if(this.walletActive == 'plug'){
+                actor = await this.provider.createActor({ canisterId: canisterId, interfaceFactory: idl });
+                this.canisterActors[canisterId] = actor;
+            }else if (this.walletActive == 'stoic' || this.walletActive == 'dfinity') {
+                actor = await Actor.createActor(idl, { agent: this.provider.agent, canisterId: canisterId });
+                this.canisterActors[canisterId] = actor;
+            }else if(this.walletActive == 'bitfinity'){
                 actor = await this.provider.createActor({ canisterId: canisterId, interfaceFactory: idl });
                 this.canisterActors[canisterId] = actor;
             }
-        } else if (this.walletActive == 'stoic' || this.walletActive == 'dfintiy') {
-            actor = await Actor.createActor(idl, { agent: this.provider.agent, canisterId: canisterId });
+            return actor;
         }
-        return actor;
     };
-    async autoConnect(connectObj = { whitelist: ['ryjl3-tyaaa-aaaaa-aaaba-cai'], host: HOSTURL, }){
-        if(connectObj.whitelist.find(x=> 'ryjl3-tyaaa-aaaaa-aaaba-cai' )){}
+    async autoConnect(connectObj = { whitelist: ['ryjl3-tyaaa-aaaaa-aaaba-cai'], host: HOSTURL, }) {
+        connectObj = this._cleanUpConnObj(connectObj);
         var walletConnected = localStorage.getItem('dfinityWallet');
         var selectedWallet = this.wallets.find(o => o.id == walletConnected);
         if (!selectedWallet) return false;
@@ -217,6 +224,7 @@ class Artemis {
     }
     constructor(connectObj = { whitelist: ['ryjl3-tyaaa-aaaaa-aaaba-cai'], host: HOSTURL, }) {
         var walletConnected = localStorage.getItem('dfinityWallet');
+        connectObj = this._cleanUpConnObj(connectObj);
         (async () => {
             var selectedWallet = this.wallets.find(o => o.id == walletConnected);
             if (!selectedWallet) return false;

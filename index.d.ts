@@ -11,7 +11,7 @@ export default class Artemis {
     autoConnect(connectObj?:any):any;
     disconnect():boolean{};
     isLoaded():any;
-    getWalletBalance():number;
+    getWalletBalance(returnType:string):number;
     requestICPTransfer(transferRequest:any):any;
     getCanisterActor(canisterId:string, idl:any,isAnon:boolean):any;
 }

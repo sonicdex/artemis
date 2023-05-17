@@ -1,6 +1,9 @@
-const { Principal } = require('@dfinity/principal');
-const CryptoJS = require('crypto-js');
-const crc32 = require('buffer-crc32');
+import { Principal } from '@dfinity/principal';
+import { CryptoJS } from 'crypto-js';
+import { crc32 } from 'buffer-crc32';
+
+// const CryptoJS = require('crypto-js');
+// const crc32 = require('buffer-crc32');
 
 const SUB_ACCOUNT_ZERO = Buffer.alloc(32);
 const ACCOUNT_DOMAIN_SEPERATOR = '\x0Aaccount-id';

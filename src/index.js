@@ -1,12 +1,14 @@
 import { StoicIdentity } from "ic-stoic-identity";
-const { Actor, HttpAgent, SignIdentity, AnonymousIdentity } = require('@dfinity/agent');
-import { AuthClient } from "@dfinity/auth-client"
-import { NNS_IDL } from './nns.idl'
-import { getAccountIdentifier } from './identifier-utils'
+import { Actor, HttpAgent, SignIdentity, AnonymousIdentity }  from '@dfinity/agent';
+
+import { AuthClient } from "@dfinity/auth-client";
+
+import { NNS_IDL } from './nns.idl';
+
+import { getAccountIdentifier } from './identifier-utils';
 
 const HOSTURL = "https://boundary.ic0.app/";
 const ICP_DECIMAL = 100000000;
-const pubAgent = new HttpAgent({ AnonymousIdentity, host: HOSTURL })
 
 var wallets = {
     plug: window.ic ? window.ic.plug ? {
@@ -118,6 +120,7 @@ class Artemis {
     walletActive = '';
     provider = false;
     balance = 0;
+    hostUrl=HOSTURL;
     canisterActors = {};
     anoncanisterActors = [];
     connectedWalletInfo = {};
@@ -128,6 +131,7 @@ class Artemis {
     }
     async connect(wallet, connectObj = { whitelist: [], host: HOSTURL }) {
         connectObj = this._cleanUpConnObj(connectObj);
+        this.hostUrl = connectObj.host;
         if (!wallet) return false;
         try {
             var selectedWallet = this.wallets.find(o => o.id == wallet);
@@ -170,6 +174,9 @@ class Artemis {
     ];
     async getWalletBalance() {
         if (!this.accountId) return 0;
+        var actor = await this.getCanisterActor("ryjl3-tyaaa-aaaaa-aaaba-cai",TokenIDL.ICRC1.factory,true );
+
+
         var requestOptions = { method: 'GET', redirect: 'follow' };
         var _resp = await fetch("https://ledger-api.internetcomputer.org/accounts/" + this.accountId, requestOptions);
         var _resp = await _resp.json()
@@ -183,7 +190,7 @@ class Artemis {
     };
     async requestICPTransfer(transferRequest) {
         return new Promise(async (resolve, reject) => {
-            var IDL = NNS_IDL;
+            var IDL = ()=>{};
             var NNS_CANISTER_ID = 'ryjl3-tyaaa-aaaaa-aaaba-cai';
             var actor = await this.getCanisterActor(NNS_CANISTER_ID, IDL);
             const blockHeight = await actor.send_dfx(transferRequest).catch(err => { reject(err) });
@@ -196,8 +203,11 @@ class Artemis {
         if (isAnon) {
             if (this.anoncanisterActors[canisterId])
                 return actor = this.canisterActors[canisterId]
-            else
+            else{
+                const pubAgent = new HttpAgent({ AnonymousIdentity, host:  this.hostUrl });
                 return actor = await Actor.createActor(idl, { agent: pubAgent, canisterId: canisterId })
+            }
+                
         }else{
             if(this.canisterActors[canisterId]){
                 actor = await this.canisterActors[canisterId];

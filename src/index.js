@@ -1,14 +1,15 @@
 import { StoicIdentity } from "ic-stoic-identity";
-import { Actor, HttpAgent, SignIdentity, AnonymousIdentity }  from '@dfinity/agent';
+import { Actor, HttpAgent, AnonymousIdentity }  from '@dfinity/agent';
 
 import { AuthClient } from "@dfinity/auth-client";
 
 import { NNS_IDL } from './nns.idl';
 
 import { getAccountIdentifier } from './identifier-utils';
+import { Principal } from '@dfinity/principal';
 
 const HOSTURL = "https://boundary.ic0.app/";
-const ICP_DECIMAL = 100000000;
+const ICP_DECIMAL = 10**8;
 
 var wallets = {
     plug: window.ic ? window.ic.plug ? {
@@ -172,19 +173,14 @@ class Artemis {
         { id: 'bitfinity', name: 'Bitfinity Wallet', icon: 'https://raw.githubusercontent.com/sonicdex/artemis/main/assets/bitfinity.svg', adapter: wallets.bitfinity },
         { id: 'dfinity', name: "Internet Identity", icon: 'https://raw.githubusercontent.com/sonicdex/artemis/main/assets/dfinity.svg', adapter: wallets.dfinity },
     ];
-    async getWalletBalance() {
+    async getWalletBalance(returnType="number") { //bigInt // row
         if (!this.accountId) return 0;
-        var actor = await this.getCanisterActor("ryjl3-tyaaa-aaaaa-aaaba-cai",TokenIDL.ICRC1.factory,true );
-
-
-        var requestOptions = { method: 'GET', redirect: 'follow' };
-        var _resp = await fetch("https://ledger-api.internetcomputer.org/accounts/" + this.accountId, requestOptions);
-        var _resp = await _resp.json()
-        if (_resp) {
-            var acntinfo = _resp;
-            this.balance = parseFloat((acntinfo.balance / ICP_DECIMAL).toFixed(3))
-        } else {
-            this.balance = 0;
+        var actor = await this.getCanisterActor("ryjl3-tyaaa-aaaaa-aaaba-cai",NNS_IDL,false );
+        const balance = ( await actor.account_balance_dfx({ account:this.accountId })).e8s;
+        if(returnType == 'number'){
+            this.balance = (parseFloat(balance)/ ICP_DECIMAL)
+        }else{
+            this.balance = balance;
         }
         return this.balance
     };
@@ -206,8 +202,7 @@ class Artemis {
             else{
                 const pubAgent = new HttpAgent({ AnonymousIdentity, host:  this.hostUrl });
                 return actor = await Actor.createActor(idl, { agent: pubAgent, canisterId: canisterId })
-            }
-                
+            } 
         }else{
             if(this.canisterActors[canisterId]){
                 actor = await this.canisterActors[canisterId];

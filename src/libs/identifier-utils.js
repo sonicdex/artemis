@@ -1,16 +1,13 @@
 import { Principal } from '@dfinity/principal';
-import { CryptoJS } from 'crypto-js';
-import { crc32 } from 'buffer-crc32';
+import crc32 from 'buffer-crc32';
+import { Buffer } from 'buffer';
+import crypto from "crypto-js";
 
-// const CryptoJS = require('crypto-js');
-// const crc32 = require('buffer-crc32');
 
+// @ts-ignore
+window.Buffer = Buffer;
 const SUB_ACCOUNT_ZERO = Buffer.alloc(32);
 const ACCOUNT_DOMAIN_SEPERATOR = '\x0Aaccount-id';
-
-/**
- *  Code take from https://github.com/Psychedelic/DAB-js/
-*/
 
 const to32bits = (num) => {
   const b = new ArrayBuffer(4);
@@ -45,7 +42,7 @@ const byteArrayToWordArray = (byteArray) => {
     wordArray[(i / 4) | 0] |= byteArray[i] << (24 - 8 * i);
   }
   // eslint-disable-next-line
-  const result = CryptoJS.lib.WordArray.create(wordArray, byteArray.length);
+  const result = crypto.lib.WordArray.create(wordArray, byteArray.length);
   return result;
 };
 
@@ -84,7 +81,7 @@ const wordArrayToByteArray = (wordArray, length) => {
 const getAccountIdentifier = (principalId, subAccount) => {
   try {
     var principal = Principal.from(principalId);
-    const sha = CryptoJS.algo.SHA224.create();
+    const sha = crypto.algo.SHA224.create();
     sha.update(ACCOUNT_DOMAIN_SEPERATOR); // Internally parsed with UTF-8, like go does
     sha.update(byteArrayToWordArray(principal.toUint8Array()));
     const subBuffer = Buffer.from(SUB_ACCOUNT_ZERO);
@@ -98,6 +95,7 @@ const getAccountIdentifier = (principalId, subAccount) => {
     const val = checksum + hash.toString();
     return val;
   } catch (error) {
+    console.log(error)
     return false
   }
 };

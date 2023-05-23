@@ -12,6 +12,8 @@ export const bitfinity= window.ic ? window.ic.bitfinityWallet && "InfinityWallet
 
         this.getPrincipal = async function () { return window.ic.bitfinityWallet.getPrincipal() }
         this.createActor = async function (t1) { return window.ic.bitfinityWallet.createActor(t1) };
+        this.batchTransactions = async function (t1) { return window.ic.bitfinityWallet.batchTransactions(t1)};
+
         var prinObj = await this.getPrincipal();
         var acntid = await window.ic.bitfinityWallet.getAccountID()
         return { accountId: acntid, principalId: prinObj.toString() }

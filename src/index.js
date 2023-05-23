@@ -1,13 +1,14 @@
 import { Actor, HttpAgent } from '@dfinity/agent';
 import { NNS_IDL } from './did/nns.idl';
 import { walletList } from "./wallets";
+import { BatchTransaction } from './libs/batchTransact'
 
 const HOSTURL = "https://icp0.io";
 const ICP_DECIMAL = 10 ** 8;
 const NNS_CANISTER_ID = 'ryjl3-tyaaa-aaaaa-aaaba-cai';
 const localStorageKey = 'dfinityWallet'
 
-class Artemis {
+export const Artemis = class Artemis {
     accountId = false;
     principalId = false;
     walletActive = '';
@@ -113,6 +114,9 @@ class Artemis {
         var data = await this.connect(walletConnected, connectObj);
         return data;
     }
+    async batchTransaction(transactionsArray=[],){
+
+    }
     constructor(connectObj = { whitelist: [NNS_CANISTER_ID], host: HOSTURL, }) {
         var walletConnected = localStorage.getItem(localStorageKey);
         connectObj = this._cleanUpConnObj(connectObj);
@@ -123,7 +127,8 @@ class Artemis {
         })
     }
 }
+export const BatchTransact = BatchTransaction;
+
 if (window) {
     window.artemis = new Artemis({ whitelist: [NNS_CANISTER_ID], host: HOSTURL });
 }
-export default Artemis;

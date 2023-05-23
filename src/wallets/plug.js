@@ -16,6 +16,15 @@ export const  plug = window.ic ? window.ic.plug ?  {
             this.agent = window.ic.plug.agent;
             this.getPrincipal = async function () { return window.ic.plug.getPrincipal() }
             this.createActor = async function (t1, t2) { return window.ic.plug.createActor(t1, t2) };
+            this.batchTransactions = async function (t1 , TxStatus = {state:'init', txList: [] } ) { 
+                if(TxStatus && TxStatus.txList >0 ){
+                    t1.forEach((x, i) => {
+                        t1[i].onSuccess = ()=>{ TxStatus.state = txList[i]; x.onSuccess(); } 
+                    });
+                }
+                return window.ic.plug.batchTransactions(t1)
+            };
+
             return { accountId: sess.accountId, principalId: prinObj.toString() }
         } catch (e) { return false; }
     },

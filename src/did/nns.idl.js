@@ -1,4 +1,4 @@
-const NNS_IDL = ({ IDL }) => {
+export const NNS_IDL = ({ IDL }) => {
   const Tokens = IDL.Record({ 'e8s' : IDL.Nat64 });
   const Duration = IDL.Record({ 'secs' : IDL.Nat64, 'nanos' : IDL.Nat32 });
   const Account = IDL.Record({
@@ -195,5 +195,3 @@ const NNS_IDL = ({ IDL }) => {
     'transfer_fee' : IDL.Func([IDL.Record({})], [TransferFee], ['query']),
   });
 };
-
-module.exports = { NNS_IDL}

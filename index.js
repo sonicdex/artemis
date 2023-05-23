@@ -1,3 +1,5 @@
-import artemis from './src/'
+import { Artemis } from './src';
+import { BatchTransact } from './src';
 
-export default artemis;
+export { Artemis };
+export { BatchTransact };

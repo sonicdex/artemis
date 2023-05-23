@@ -1,4 +1,4 @@
-import { Actor, HttpAgent } from '@dfinity/agent';
+import { Actor, HttpAgent, AnonymousIdentity }  from '@dfinity/agent';
 import { NNS_IDL } from './did/nns.idl';
 import { walletList } from "./wallets";
 import { BatchTransaction } from './libs/batchTransact'

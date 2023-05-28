@@ -12,9 +12,11 @@ export const BatchTransaction = class BatchTransaction {
         Object.entries(transactionLlist).forEach(([key, value]) => {
             if (typeof value === 'object') {this.transactionLlist[key] = value;}
         });
-        if(Object.keys(this.transactionLlist).length > 0  ) return false;
-        this.stepsList = Object.keys(this.transactionLlist);
-        this._adapterObj = _adapterObj;
+        if(Object.keys(this.transactionLlist).length >0  ){
+            this.stepsList = Object.keys(this.transactionLlist);
+            this._adapterObj = _adapterObj;
+        } 
+        else return false;
     }
     async execute() {
         if (this.state == 'running') return false;

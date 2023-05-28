@@ -6,7 +6,7 @@ interface TransactionItem {
     onSuccess: any;
     onFail: any;
 }
-type BatchTransact = {
+type BatchTransactType = {
     [key: string]: TransactionItem[];
 };
 export const Artemis = class Artemis {
@@ -25,9 +25,9 @@ export const Artemis = class Artemis {
     getWalletBalance(returnType: string): number;
     requestICPTransfer(transferRequest: any): any;
     getCanisterActor(canisterId: string, idl: any, isAnon: boolean): any;
-    batchTransact(transactions: BatchTransact): any;
+    batchTransact(transactions: BatchTransactType): any;
 }
-export const BatchTransaction = class BatchTransact{
+export const BatchTransact = class BatchTransact{
     state:'idle'; //   'idle' ,'running', 'error' ,'done' 
     transactionLlist={};
     stepsList=[];
@@ -39,4 +39,5 @@ export const BatchTransaction = class BatchTransact{
     FailedStep='';
     transactionResults={};
     execute(trx:any):any;
+    constructor(transactionList: any, artemis: any):any
 } 

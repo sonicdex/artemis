@@ -9,8 +9,11 @@ export const BatchTransaction = class BatchTransaction {
     _adapterObj = false;
     constructor(transactionLlist = {}, _adapterObj) {
         if(!_adapterObj || !_adapterObj.provider) return false;
-        this.transactionLlist = transactionLlist;
-        this.stepsList = Object.keys(transactionLlist);
+        Object.entries(transactionLlist).forEach(([key, value]) => {
+            if (typeof value === 'object') {this.transactionLlist[key] = value;}
+        });
+        if(Object.keys(this.transactionLlist).length > 0  ) return false;
+        this.stepsList = Object.keys(this.transactionLlist);
         this._adapterObj = _adapterObj;
     }
     async execute() {
@@ -43,7 +46,7 @@ export const BatchTransaction = class BatchTransaction {
         if (this._adapterObj.walletActive == 'plug' || this._adapterObj.walletActive == 'bitfinity') {
             self.activeStep = self.stepsList[0];
             var resp = await this._adapterObj.provider.batchTransactions(trxArray);
-            if (resp) {
+            if (self.FailedSteps.length == 0) {
                 self.state = 'done';
                 return self.transactionResults;
             } else {

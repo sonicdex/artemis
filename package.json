@@ -9,7 +9,7 @@
   "author": "code_lion",
   "license": "ISC",
   "dependencies": {
-    "@/sdk-web": "^0.1.38",
+    "@astrox/sdk-web": "^0.1.38",
     "@dfinity/agent": "0.12.2",
     "@dfinity/auth-client": "^0.12.2",
     "@dfinity/candid": "0.12.2",

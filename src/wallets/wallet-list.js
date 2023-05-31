@@ -1,14 +1,14 @@
-import { plug } from './plug';
-import { stoic } from './stoic';
 import { bitfinity } from './bitfinity';
 import { dfinity } from './dfinity';
-
-const wallets = { plug, stoic, bitfinity, dfinity };
-
+import { plug } from './plug';
+import { stoic } from './stoic';
+import { astrox } from './astroxme';
+// import { nfid } from './nfid';
 export const walletList = [
-    { id: 'dfinity', name: "Internet Identity", icon: 'https://raw.githubusercontent.com/sonicdex/artemis/main/assets/dfinity.svg', adapter: wallets.dfinity },
-    { id: 'astroxme', name: 'AstroX ME', icon: 'https://raw.githubusercontent.com/sonicdex/artemis/main/assets/astroxme.svg', adapter: false },
-    { id: 'bitfinity', name: 'Bitfinity Wallet', icon: 'https://raw.githubusercontent.com/sonicdex/artemis/main/assets/bitfinity.svg', adapter: wallets.bitfinity },
-    { id: 'plug', name: 'Plug Wallet', icon: 'https://raw.githubusercontent.com/sonicdex/artemis/main/assets/plug.jpg', adapter: wallets.plug },
-    { id: 'stoic', name: 'Stoic Wallet', icon: 'https://raw.githubusercontent.com/sonicdex/artemis/main/assets/stoic.png', adapter: wallets.stoic },
+    { id: 'dfinity', name: "Internet Identity", icon: 'https://d15bmhsw4m27if.cloudfront.net/artemis/dfinity.svg', adapter: dfinity },
+    { id: 'plug', name: 'Plug Wallet', icon: 'https://d15bmhsw4m27if.cloudfront.net/artemis/plug.jpg', adapter: plug },
+    { id: 'astrox', name: 'AstroX ME', icon: 'https://d15bmhsw4m27if.cloudfront.net/artemis/astroxme.webp', adapter: astrox },
+    { id: 'bitfinity', name: 'Bitfinity Wallet', icon: 'https://d15bmhsw4m27if.cloudfront.net/artemis/bitfinity.svg', adapter: bitfinity },
+    { id: 'stoic', name: 'Stoic Wallet', icon: 'https://d15bmhsw4m27if.cloudfront.net/artemis/stoic.png', adapter: stoic },
+    // { id: 'nfid', name: 'NFID', icon: 'https://d15bmhsw4m27if.cloudfront.net/artemis/nfid.svg', adapter: nfid },
 ];

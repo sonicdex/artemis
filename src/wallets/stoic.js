@@ -1,5 +1,5 @@
 import { StoicIdentity } from "ic-stoic-identity";
-import { Actor, HttpAgent }  from '@dfinity/agent';
+import { Actor, HttpAgent } from '@dfinity/agent';
 
 export const stoic = {
     readyState: "Loadable", url: 'https://www.stoicwallet.com/',
@@ -9,8 +9,10 @@ export const stoic = {
         let getAcnts = await identity.accounts();
         getAcnts = JSON.parse(getAcnts);
         this.agent = new HttpAgent({ identity, host: connectObj.host });
-        this.createActor = function (interfaceFactory, dconfig) {
-            return Actor.createActor(interfaceFactory, dconfig);
+
+        this.createActor = async function (connObj = { canisterId: '', interfaceFactory: false }) {
+            if (!connObj.canisterId || !connObj.interfaceFactory) return false;
+            return await Actor.createActor(connObj.interfaceFactory, { agent: this.agent, canisterId: connObj.canisterId });
         };
         this.createAgent = function () {
             return new HttpAgent({ identity, host: connectObj.host });

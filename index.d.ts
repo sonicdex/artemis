@@ -9,7 +9,7 @@ interface TransactionItem {
 type BatchTransactType = {
     [key: string]: TransactionItem[];
 };
-export const Artemis = class Artemis {
+const Artemis = class Artemis {
     accountId: string;
     principalId: string;
     walletActive: string;
@@ -20,24 +20,29 @@ export const Artemis = class Artemis {
     connectedWalletInfo: { id: string, icon: string, name: string };
     connect(wallet: string, connectObj?: any): string;
     autoConnect(connectObj?: any): any;
-    disconnect(): boolean { };
+    disconnect(): any;
     isLoaded(): any;
     getWalletBalance(returnType: string): number;
     requestICPTransfer(transferRequest: any): any;
     getCanisterActor(canisterId: string, idl: any, isAnon: boolean): any;
     batchTransact(transactions: BatchTransactType): any;
 }
-export const BatchTransact = class BatchTransact{
-    state:'idle'; //   'idle' ,'running', 'error' ,'done' 
-    transactionLlist={};
-    stepsList=[];
-    pending=[];
-    compled=[];
-    previousStep='';
-    activeStep='';
-    nextStep='';
-    FailedStep='';
-    transactionResults={};
-    execute(trx:any):any;
-    constructor(transactionList: any, artemis: any):any
-} 
+const BatchTransact = class BatchTransact {
+    state: 'idle' | 'running' | 'error' | 'done';
+    transactionLlist: {};
+    stepsList: [];
+    pending: [];
+    compled: [];
+    previousStep: '';
+    activeStep: '';
+    nextStep: '';
+    FailedStep: '';
+    transactionResults: {};
+    execute(): any;
+    constructor(transactionList: any, artemis: Artemis)
+}
+
+declare module 'artemis-web3-adapter' {
+    export { Artemis }
+    export { BatchTransact };
+}

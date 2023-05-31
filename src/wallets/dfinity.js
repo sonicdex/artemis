@@ -4,13 +4,14 @@ import { AuthClient } from "@dfinity/auth-client";
 
 export const dfinity = {
     readyState: "Loadable", url: "https://identity.ic0.app",
+    authClient:false,
     connectWallet: async function (connectObj = { whitelist: [], host: '' }) {
-        var self = this, returnData = {}
+        var self = this, returnData = {};
+        self.authClient = await AuthClient.create();
         return new Promise(async (resolve, reject) => {
-            var authClient = await AuthClient.create();
-            var isConnected = await authClient.isAuthenticated();
+            var isConnected = await  self.authClient.isAuthenticated();
             if (!isConnected) {
-                authClient.login({
+                self.authClient.login({
                     identityProvider: 'https://identity.ic0.app',
                     onSuccess: async () => {
                         returnData = await continueLogin();
@@ -22,18 +23,20 @@ export const dfinity = {
                 resolve(returnData);
             }
             async function continueLogin() {
-                var identity = await authClient.getIdentity();
+                var identity = await  self.authClient.getIdentity();
                 var principal = await identity?.getPrincipal();
                 self.agent = new HttpAgent({ identity: identity, host: connectObj.host });
                 var sid = await getAccountIdentifier(identity?.getPrincipal().toString());
-                self.createActor = async function (interfaceFactory, dconfig) {
-                    return Actor.createActor(interfaceFactory, dconfig);
+                
+                self.createActor = async function (connObj = { canisterId: '', interfaceFactory: false }) {
+                    if (!connObj.canisterId || !connObj.interfaceFactory) return false;
+                    return await Actor.createActor(connObj.interfaceFactory, { agent: this.agent, canisterId: connObj.canisterId });
                 };
                 self.createAgent = async function () {
                     return new HttpAgent({ identity: identity, host: connectObj.host });
                 };
                 self.getPrincipal = async function () { return identity.getPrincipal() }
-                self.disConnectWallet = async function () { await authClient.logout() }
+                self.disConnectWallet = async function () { await  self.authClient.logout() }
                 return { accountId: sid, principalId: principal.toString() }
             }
         });

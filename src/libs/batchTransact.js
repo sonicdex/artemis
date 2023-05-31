@@ -45,7 +45,7 @@ export const BatchTransaction = class BatchTransaction {
             }
         });
 
-        if (this._adapterObj.walletActive == 'plug' || this._adapterObj.walletActive == 'bitfinity') {
+        if (['plug', 'bitfinity'].includes(this._adapterObj.walletActive)) {
             self.activeStep = self.stepsList[0];
             var resp = await this._adapterObj.provider.batchTransactions(trxArray);
             if (self.FailedSteps.length == 0) {
@@ -55,7 +55,7 @@ export const BatchTransaction = class BatchTransaction {
                 self.state = 'error';
                 return false;
             }
-        } else if (this._adapterObj.walletActive == 'stoic' || this._adapterObj.walletActive == 'dfinity') {
+        } else if (['stoic', 'dfinity', 'astrox'].includes(this._adapterObj.walletActive)){
             self.activeStep = self.stepsList[0];
             for (const trxItem of trxArray) {
                 var actor = await self._adapterObj.getCanisterActor(trxItem.canisterId, trxItem.idl);

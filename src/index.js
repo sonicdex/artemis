@@ -1,4 +1,4 @@
-import { Actor, HttpAgent, AnonymousIdentity }  from '@dfinity/agent';
+import { Actor, HttpAgent, AnonymousIdentity } from '@dfinity/agent';
 import { NNS_IDL } from './did/nns.idl';
 import { walletList } from "./wallets";
 import { BatchTransaction } from './libs/batchTransact'
@@ -47,7 +47,8 @@ export const Artemis = class Artemis {
             }
             return this.principalId;
         } catch (error) {
-            return false; }
+            return false;
+        }
     };
     async disconnect() {
         var res = this.provider.disConnectWallet();
@@ -66,8 +67,8 @@ export const Artemis = class Artemis {
         if (!this.accountId) return 0;
         var actor = await this.getCanisterActor(NNS_CANISTER_ID, NNS_IDL, false);
         const balance = (await actor.account_balance_dfx({ account: this.accountId })).e8s;
-        if (returnType == 'number') { this.balance = (parseFloat(balance) / ICP_DECIMAL)}
-        else { this.balance = balance;}
+        if (returnType == 'number') { this.balance = (parseFloat(balance) / ICP_DECIMAL) }
+        else { this.balance = balance; }
         return this.balance
     };
     async requestICPTransfer(transferRequest) {
@@ -119,5 +120,7 @@ export const Artemis = class Artemis {
 export const BatchTransact = BatchTransaction;
 
 if (window) {
-    window.artemis = new Artemis({ whitelist: [NNS_CANISTER_ID], host: HOSTURL });
+    const artemis = new Artemis({ whitelist: [NNS_CANISTER_ID], host: HOSTURL });
+    window.artemis = artemis;
+    window.artemis.BatchTransact = BatchTransaction;
 }

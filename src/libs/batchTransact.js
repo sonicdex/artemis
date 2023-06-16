@@ -59,7 +59,12 @@ export const BatchTransaction = class BatchTransaction {
             self.activeStep = self.stepsList[0];
             for (const trxItem of trxArray) {
                 var actor = await self._adapterObj.getCanisterActor(trxItem.canisterId, trxItem.idl);
-                var resp = await actor[trxItem.methodName](...trxItem.args);
+                var resp = false;
+                if (trxItem.args) {
+                    resp = await actor[trxItem.methodName](...trxItem.args);
+                }else{
+                    resp = await actor[trxItem.methodName]();
+                } 
                 if (resp) {
                     await trxItem.onSuccess(resp);
                 } else {

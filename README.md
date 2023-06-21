@@ -38,7 +38,43 @@ const artemisWalletAdapter = new Artemis(connectObj);
 
 ```
 
-## Using an Batch
+## Using Batch Transaction
+
+Import  BatchTransact class
+
+```
+import { BatchTransact } from 'artemis-web3-adapter';
+
+    const transactions = {
+        initGetAcc1: {
+          canisterId: '3xwpq-ziaaa-aaaah-qcn4a-cai',
+          idl: SONICSWAP_IDL,
+          methodName: 'initiateICRC1Transfer',
+          updateNextStep: (trxResult , nextTrxItem) => {
+            nextTrxItem.args[0].to.subaccount=[trxResult]
+          },
+          onSuccess: () => { },
+          onFail: () => { },
+          args: []
+        },
+        deposit: {
+          canisterId: 'ryjl3-tyaaa-aaaaa-aaaba-cai',
+          idl: ICRC1_IDL,
+          methodName: 'icrc1_transfer1',
+          args: [{
+            to: { owner: Principal.fromText('3xwpq-ziaaa-aaaah-qcn4a-cai'), subaccount: [] },
+            fee: [], memo: [], amount: BigInt(0), from_subaccount: [], created_at_time: []
+          }],
+        },
+    }
+
+    const batchTransactionObject =  new BatchTransact(transactions, artemisWalletAdapter);
+
+    const resp = await batchTransactionObject.execute();
+
+```
+
+
 
 
 

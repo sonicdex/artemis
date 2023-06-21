@@ -1,0 +1,14 @@
+{
+	"folders": [
+		{
+			"path": "../../../../sonicDex/sonic-lbp"
+		},
+		{
+			"path": "../../../../sonicDex/sonic-app"
+		}
+	],
+	"settings": {
+		"nuxt.isNuxtApp": false,
+		"typescript.tsdk": "node_modules\\typescript\\lib"
+	}
+}

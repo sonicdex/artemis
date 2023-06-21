@@ -1,5 +1,4 @@
 import { Artemis } from './src';
 import { BatchTransact } from './src';
 
-export { Artemis };
-export { BatchTransact };
+export { Artemis , BatchTransact };

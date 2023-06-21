@@ -2,52 +2,97 @@ export const BatchTransaction = class BatchTransaction {
     state = 'idle'; //   'idle' ,'running', 'error' ,'done' 
     transactionLlist = {};
     stepsList = [];
-    compled = [];
+    completed = [];
     activeStep = '';
     FailedSteps = [];
     transactionResults = {};
+    trxArray=[];
     _adapterObj = false;
     constructor(transactionLlist = {}, _adapterObj) {
-        if(!_adapterObj || !_adapterObj.provider) return false;
+        if (!_adapterObj || !_adapterObj.provider) return false;
         Object.entries(transactionLlist).forEach(([key, value]) => {
-            if (typeof value === 'object') {this.transactionLlist[key] = value;}
+            if (typeof value === 'object') { this.transactionLlist[key] = value; }
         });
-        if(Object.keys(this.transactionLlist).length >0  ){
+        if (Object.keys(this.transactionLlist).length > 0) {
             this.stepsList = Object.keys(this.transactionLlist);
             this._adapterObj = _adapterObj;
-        } 
+        }
         else return false;
     }
-    async execute() {
-        if (this.state == 'running') return false;
-        if (!this._adapterObj || Object.keys(this.transactionLlist).length == 0) return false;
-        this.state = 'running';
-        const trxArray = Object.values(this.transactionLlist);
-        let self = this;
-        trxArray.forEach((el, i) => {
-            trxArray[i].onSuccess = (data) => {
-                if (data.err || data.Err || data.ERR) {
-                    self.FailedSteps.push(self.stepsList[i]);
-                    self.transactionResults[self.stepsList[i]] = data;
-                    self.state = 'error';
-                    return false;
-                } else {
-                    self.compled.push(self.stepsList[i]);
-                    self.activeStep = self.stepsList[i + 1];
-                    self.transactionResults[self.stepsList[i]] = data;
-                }
-            };
-            trxArray[i].onFail = (err) => {
-                self.FailedSteps.push(self.stepsList[i]);
-                self.activeStep = self.stepsList[i]
-                self.state = 'error';
-                return false;
-            }
+
+    _prepareTrxArry = function () {
+        var self = this;
+        self.trxArray = [];
+        var tempArray = [];
+        Object.values(this.transactionLlist).forEach(x => {
+            tempArray.push(x);
+            if (x.updateNextStep) {  self.trxArray.push(tempArray); tempArray = []; }
         });
+        if (tempArray.length > 0) self.trxArray.push(tempArray);
+        var trxIndex = 0;
+        self.trxArray.forEach((subArray, i) => {
+            subArray.forEach((el, j) => {
+                self.trxArray[i][j].stepIndex = trxIndex;
+                self.trxArray[i][j].state = 'idle';
+                self.trxArray[i][j].onSuccess = async (data) => {
+
+                    var stepIndex = self.trxArray[i][j].stepIndex;
+                    if (data.err || data.Err || data.ERR) {
+                        self.FailedSteps.push(self.stepsList[stepIndex]);
+                        self.transactionResults[self.stepsList[stepIndex]] = data;
+                        self.state = 'error';
+                        self.trxArray[i][j].state = 'error';
+                        return false;
+                    } else {
+                        self.completed.push(self.stepsList[stepIndex]);
+                        self.activeStep = self.stepsList[stepIndex + 1];
+                        self.transactionResults[self.stepsList[stepIndex]] = data;
+                        self.trxArray[i][j].state = 'done';
+                    }
+                    if( self.trxArray[i][j].updateNextStep) self.trxArray[i][j].updateNextStep(data , self.trxArray[(i+1)][0]);
+                };
+                self.trxArray[i][j].onFail = (err) => {
+                    var stepIndex = self.trxArray[i][j].stepIndex;
+                    self.FailedSteps.push(self.stepsList[stepIndex]);
+                    self.activeStep = self.stepsList[stepIndex];
+                    self.state = 'error';
+                    self.trxArray[i][j].state = 'error';
+                    return false;
+                }
+                trxIndex++;
+            })
+        });
+        return self.trxArray;
+    }
+    async retryExecute() {
+        if (this.state != "error") return false;
+        this.trxArray = this.trxArray.map(innerArray => innerArray.filter(item => item.state !== 'done'));
+        this.state = 'running';
+        this.FailedSteps =[];
+        var data =  await this._processBatch();
+        return data;
+    }
+
+    async execute() {
+        if (this.state == 'running' || !this._adapterObj || Object.keys(this.transactionLlist).length == 0) return false;
+        if(this.state == 'done') return this.transactionResults;
+        this.state = 'running';
+        this.FailedSteps = [];
+        this.trxArray = this._prepareTrxArry();
+        return await this._processBatch();
+    }
+    async _processBatch() {
+        if(!this.trxArray.length)  return false;
+        var self = this;
+        self.activeStep = self.completed.length>0?self.stepsList[self.completed.length]: self.stepsList[0];
 
         if (['plug', 'bitfinity'].includes(this._adapterObj.walletActive)) {
-            self.activeStep = self.stepsList[0];
-            var resp = await this._adapterObj.provider.batchTransactions(trxArray);
+            for (const trxStepItem of self.trxArray) {
+                if (self.state == 'error' || self.state == 'done' ) break;
+                if(trxStepItem.length)
+                var resp = await this._adapterObj.provider.batchTransactions(trxStepItem);
+            }
+            
             if (self.FailedSteps.length == 0) {
                 self.state = 'done';
                 return self.transactionResults;
@@ -55,21 +100,19 @@ export const BatchTransaction = class BatchTransaction {
                 self.state = 'error';
                 return false;
             }
-        } else if (['stoic', 'dfinity', 'astrox'].includes(this._adapterObj.walletActive)){
-            self.activeStep = self.stepsList[0];
-            for (const trxItem of trxArray) {
-                var actor = await self._adapterObj.getCanisterActor(trxItem.canisterId, trxItem.idl);
-                var resp = false;
-                if (trxItem.args) {
-                    resp = await actor[trxItem.methodName](...trxItem.args);
-                }else{
-                    resp = await actor[trxItem.methodName]();
-                } 
-                if (resp) {
-                    await trxItem.onSuccess(resp);
-                } else {
-                    trxItem.onFail(resp);
-                    break;
+        } else if (['stoic', 'dfinity', 'astrox'].includes(this._adapterObj.walletActive)) {
+            for (const trxStepItem of self.trxArray) {
+                if (self.state == 'error' || self.state == 'done' || trxStepItem.length == 0) break;
+                for (const trxItem of trxStepItem) {
+                    var actor = await self._adapterObj.getCanisterActor(trxItem.canisterId, trxItem.idl);
+                    var resp = false;
+                    if (trxItem.args) { 
+                        resp = await actor[trxItem.methodName](...trxItem.args); }
+                    else {
+                        resp = await actor[trxItem.methodName]();
+                    }
+                    if (resp) { await trxItem.onSuccess(resp); }
+                    else { trxItem.onFail(resp); }
                 }
             }
             if (self.FailedSteps.length == 0) {
@@ -79,8 +122,7 @@ export const BatchTransaction = class BatchTransaction {
                 self.state = 'error';
                 return false;
             }
-        }
-        else {
+        } else {
             self.state = 'error';
             return false;
         }

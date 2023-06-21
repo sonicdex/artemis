@@ -5,6 +5,7 @@ interface TransactionItem {
     idl: any;
     onSuccess: any;
     onFail: any;
+    updateNextStep: any;
 }
 type BatchTransactType = {
     [key: string]: TransactionItem[];
@@ -26,19 +27,23 @@ const Artemis = class Artemis {
     requestICPTransfer(transferRequest: any): any;
     getCanisterActor(canisterId: string, idl: any, isAnon: boolean): any;
     batchTransact(transactions: BatchTransactType): any;
+    trxArray:[TransactionItem[]]
 }
+
 const BatchTransact = class BatchTransact {
     state: 'idle' | 'running' | 'error' | 'done';
-    transactionLlist: {};
-    stepsList: [];
-    pending: [];
-    compled: [];
-    previousStep: '';
-    activeStep: '';
-    nextStep: '';
-    FailedStep: '';
+    transactionLlist: BatchTransactType;
+    stepsList: string[];
+    pending: string[];
+    completed: string[];
+    previousStep: string;
+    activeStep: string;
+    nextStep: string;
+    FailedStep: string;
     transactionResults: {};
+    trxArray:[];
     execute(): any;
+    retryExecute(): any;
     constructor(transactionList: any, artemis: Artemis)
 }
 

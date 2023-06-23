@@ -36,7 +36,6 @@ export const BatchTransaction = class BatchTransaction {
                 self.trxArray[i][j].state = 'idle';
                 self.trxArray[i][j].onSuccess = async (data) => {
                     const stepIndex = self.trxArray[i][j].stepIndex;
-
                     if (data.err || data.Err || data.ERR) {
                         self.FailedSteps.push(self.stepsList[stepIndex]);
                         self.transactionResults[self.stepsList[stepIndex]] = data;
@@ -49,7 +48,9 @@ export const BatchTransaction = class BatchTransaction {
                         self.transactionResults[self.stepsList[stepIndex]] = data;
                         self.trxArray[i][j].state = 'done';
                     }
-                    if (self.trxArray[i][j].updateNextStep) self.trxArray[i][j].updateNextStep(data, self.trxArray[(i + 1)][0]);
+                    if (self.trxArray[i][j].updateNextStep){
+                       await self.trxArray[i][j].updateNextStep(data, self.trxArray[(i + 1)][0]);
+                    } 
                 };
                 self.trxArray[i][j].onFail = (err) => {
                     const stepIndex = self.trxArray[i][j].stepIndex;

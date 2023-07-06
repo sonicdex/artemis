@@ -47,7 +47,9 @@ const BatchTransact = class BatchTransact {
     constructor(transactionList: any, artemis: Artemis)
 }
 
+const principalIdFromHex:(params:string)=> {};
 declare module 'artemis-web3-adapter' {
     export { Artemis }
     export { BatchTransact };
+    export{ principalIdFromHex };
 }

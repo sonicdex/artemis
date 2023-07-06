@@ -78,7 +78,7 @@ const wordArrayToByteArray = (wordArray, length) => {
   return [].concat.apply([], result);
 };
 
-const getAccountIdentifier = (principalId, subAccount) => {
+const getAccountIdentifier = (principalId, subAccount='') => {
   try {
     var principal = Principal.from(principalId);
     const sha = crypto.algo.SHA224.create();

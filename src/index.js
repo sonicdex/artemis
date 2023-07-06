@@ -3,6 +3,8 @@ import { NNS_IDL } from './did/nns.idl';
 import { walletList } from "./wallets";
 import { BatchTransaction } from './libs/batchTransact'
 
+import { getAccountIdentifier } from './libs/identifier-utils'
+
 const HOSTURL = "https://icp0.io";
 const ICP_DECIMAL = 10 ** 8;
 const NNS_CANISTER_ID = 'ryjl3-tyaaa-aaaaa-aaaba-cai';
@@ -118,6 +120,8 @@ export const Artemis = class Artemis {
     }
 }
 export const BatchTransact = BatchTransaction;
+
+export const principalIdFromHex = getAccountIdentifier;
 
 if (window) {
     const artemis = new Artemis({ whitelist: [NNS_CANISTER_ID], host: HOSTURL });

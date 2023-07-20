@@ -34,9 +34,6 @@ if (!window.ic?.astrox) astroxInit()
 export const astrox = {
     readyState: "Loadable", url: "https://63k2f-nyaaa-aaaah-aakla-cai.raw.ic0.app",
     connectWallet: async function (connectObj = { whitelist: [], host: '' }) {
-
-        console.log(connectObj);
-
         var self = this;
         return new Promise(async (resolve, reject) => {
             //check app is  in ME App.
@@ -57,7 +54,6 @@ export const astrox = {
                 //     if (!connObj.canisterId || !connObj.interfaceFactory) return false;
                 //     return await Actor.createActor(connObj.interfaceFactory, { agent: this.agent, canisterId: connObj.canisterId });
                 // };
-
 
                 self.createActor = async function (connObj = { canisterId: '', interfaceFactory: false }) {
                     if (!connObj.canisterId || !connObj.interfaceFactory) return false;

@@ -6,6 +6,7 @@ export const  plug = window.ic ? window.ic.plug ?  {
         var publicKey = false, prinObj = false;
         var result = false;
         try { result= await window.ic.plug.isConnected();} catch (e) {}
+
         try {
             if (result) {
                 await window.ic.plug.createAgent(connectObj)

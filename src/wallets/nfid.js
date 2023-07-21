@@ -19,7 +19,7 @@ export const nfid = {
             const identity =  self.authClient.getIdentity();
             const principal = identity.getPrincipal().toString();
 
-            console.log(identity ,principal )
+            // console.log(identity ,principal )
 
             //             console.log(identity , identity);
 

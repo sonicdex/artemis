@@ -1,6 +1,6 @@
 {
   "name": "artemis-web3-adapter",
-  "version": "0.4.0",
+  "version": "0.4.6",
   "description": "dfinity wallet adapter for connecting different wallets in IC",
   "main": "index.js",
   "scripts": {
@@ -10,6 +10,7 @@
   "license": "ISC",
   "dependencies": {
     "@astrox/sdk-web": "^0.1.38",
+    "@astrox/sdk-webview": "^0.1.38",
     "@dfinity/agent": "0.12.2",
     "@dfinity/auth-client": "^0.12.2",
     "@dfinity/candid": "0.12.2",

@@ -4,7 +4,9 @@ export const  plug = window.ic ? window.ic.plug ?  {
     readyState: "Installed",
     connectWallet: async function (connectObj = { whitelist: [], host: '', }) {
         var publicKey = false, prinObj = false;
-        var result = await window.ic.plug.isConnected();
+        var result = false;
+        try { result= await window.ic.plug.isConnected();} catch (e) {}
+
         try {
             if (result) {
                 await window.ic.plug.createAgent(connectObj)

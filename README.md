@@ -38,6 +38,15 @@ const artemisWalletAdapter = new Artemis(connectObj);
 
 ```
 
+or
+
+```
+
+```
+
+
+
+
 ## Using Batch Transaction
 
 Import  BatchTransact class

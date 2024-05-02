@@ -17,7 +17,6 @@ export const Artemis = class Artemis {
     walletActive = '';
     provider = false;
     balance = 0;
-    hostUrl = HOSTURL;
     canisterActors = {};
     anoncanisterActors = [];
     connectedWalletInfo = {};
@@ -31,7 +30,6 @@ export const Artemis = class Artemis {
     }
     async connect(wallet, connectObj = { whitelist: [], host: HOSTURL }) {
         connectObj = this._cleanUpConnObj(connectObj);
-        this.hostUrl = connectObj.host;
         if (!wallet) return false;
         try {
             var selectedWallet = this.wallets.find(o => o.id == wallet);

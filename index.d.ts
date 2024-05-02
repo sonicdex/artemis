@@ -52,4 +52,5 @@ declare module 'artemis-web3-adapter' {
     export { Artemis }
     export { BatchTransact };
     export{ principalIdFromHex };
+    export { ArtemisAdapter};
 }

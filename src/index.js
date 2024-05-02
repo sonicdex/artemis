@@ -130,5 +130,5 @@ if (window) {
     const artemis = new Artemis({ whitelist: [NNS_CANISTER_ID], host: HOSTURL });
     window.artemis = artemis;
     window.artemis.BatchTransact = BatchTransaction;
-    window.artemis.dfinity = { Actor, HttpAgent, AnonymousIdentity, Principal }
+    window.artemis.dfinity = {  AnonymousIdentity, Principal }
 }

@@ -1,4 +1,4 @@
-import { TMsqCreateOk, MsqClient } from "@fort-major/msq-client";
+import { MsqClient } from "@fort-major/msq-client";
 
 import { Actor, HttpAgent } from "@dfinity/agent";
 import { getAccountIdentifier } from '../libs/identifier-utils';

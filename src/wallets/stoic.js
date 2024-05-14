@@ -5,9 +5,14 @@ export const stoic = {
     readyState: "Loadable", url: 'https://www.stoicwallet.com/',
     connectWallet: async function (connectObj = { whitelist: [], host: '' }) {
         var identity = await StoicIdentity.load();
+
+        console.log(identity);
+
+        
         if (!identity) { identity = await StoicIdentity.connect(); }
         let getAcnts = await identity.accounts();
         getAcnts = JSON.parse(getAcnts);
+
         this.agent = new HttpAgent({ identity, host: connectObj.host });
 
         this.createActor = async function (connObj = { canisterId: '', interfaceFactory: false }) {

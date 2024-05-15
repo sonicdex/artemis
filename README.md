@@ -16,6 +16,8 @@ Developers are not required to individually integrate all wallets, resulting in 
     - Plug
     - AstroX ME
     - Infinity Wallet
+    - NFID
+    - MetaMask ( MSQ - Safe ICP Wallet)
 
 ## Installation
 
@@ -37,6 +39,15 @@ const connectObj = { whitelist: ['ryjl3-tyaaa-aaaaa-aaaba-cai'], host: 'https://
 const artemisWalletAdapter = new Artemis(connectObj);
 
 ```
+
+or
+
+```
+
+```
+
+
+
 
 ## Using Batch Transaction
 

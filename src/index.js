@@ -3,7 +3,8 @@ import { NNS_IDL } from './did/nns.idl';
 import { walletList } from "./wallets";
 import { BatchTransaction } from './libs/batchTransact'
 
-import { getAccountIdentifier } from './libs/identifier-utils'
+import { getAccountIdentifier } from './libs/identifier-utils';
+import { Principal } from '@dfinity/principal';
 
 const HOSTURL = "https://icp0.io";
 const ICP_DECIMAL = 10 ** 8;
@@ -16,19 +17,19 @@ export const Artemis = class Artemis {
     walletActive = '';
     provider = false;
     balance = 0;
-    hostUrl = HOSTURL;
     canisterActors = {};
     anoncanisterActors = [];
     connectedWalletInfo = {};
     wallets = walletList;
+    _connectObject={ whitelist: [NNS_CANISTER_ID], host: HOSTURL, }
     _cleanUpConnObj(connectObj) {
         connectObj.whitelist.push(NNS_CANISTER_ID);
         connectObj.whitelist = Array.from(new Set([...connectObj.whitelist]));
+        this._connectObject = connectObj;
         return connectObj;
     }
     async connect(wallet, connectObj = { whitelist: [], host: HOSTURL }) {
         connectObj = this._cleanUpConnObj(connectObj);
-        this.hostUrl = connectObj.host;
         if (!wallet) return false;
         try {
             var selectedWallet = this.wallets.find(o => o.id == wallet);
@@ -123,8 +124,11 @@ export const BatchTransact = BatchTransaction;
 
 export const principalIdFromHex = getAccountIdentifier;
 
+export const ArtemisAdapter = new Artemis({ whitelist: [NNS_CANISTER_ID], host: HOSTURL }); 
+
 if (window) {
     const artemis = new Artemis({ whitelist: [NNS_CANISTER_ID], host: HOSTURL });
     window.artemis = artemis;
     window.artemis.BatchTransact = BatchTransaction;
+    window.artemis.dfinity = {  AnonymousIdentity, Principal }
 }

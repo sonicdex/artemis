@@ -7,6 +7,7 @@ export const BatchTransaction = class BatchTransaction {
     FailedSteps = [];
     transactionResults = {};
     trxArray = [];
+    _info= false;
     _adapterObj = false;
     constructor(transactionLlist = {}, _adapterObj) {
         if (!_adapterObj || !_adapterObj.provider) return false;
@@ -87,8 +88,8 @@ export const BatchTransaction = class BatchTransaction {
         if (!this.trxArray.length) return false;
         var self = this;
         self.activeStep = self.completed.length > 0 ? self.stepsList[self.completed.length] : self.stepsList[0];
-
-        if (['bitfinity'].includes(this._adapterObj.walletActive)) {
+        console.log(this._adapterObj.walletActive);
+        if (['bitfinity','plug'].includes(this._adapterObj.walletActive)) {
             for (const trxStepItem of self.trxArray) {
                 if (self.state == 'error' || self.state == 'done') break;
                 if (trxStepItem.length)
@@ -101,7 +102,7 @@ export const BatchTransaction = class BatchTransaction {
                 self.state = 'error';
                 return false;
             }
-        } else if (['plug','stoic', 'dfinity', 'astrox'].includes(this._adapterObj.walletActive)) {
+        } else if (['stoic', 'dfinity', 'astrox','metamask','nfid'].includes(this._adapterObj.walletActive)) {
             try {
                 for (const trxStepItem of self.trxArray) {
                     if (self.state == 'error' || self.state == 'done') break;
@@ -128,9 +129,11 @@ export const BatchTransaction = class BatchTransaction {
                 }
             } catch (error) {
                 self.state = 'error';
+                self._info = error;
                 return false;
             }
         } else {
+            console.log('trx method not defined...');
             self.state = 'error';
             return false;
         }

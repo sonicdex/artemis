@@ -7,6 +7,7 @@ import { nfid } from './nfid';
 import { metaMask } from './msq';
 
 const BaseUrl = "https://raw.githubusercontent.com/sonicdex/artemis/main/";
+
 export const walletList = [
     { id: 'dfinity', name: "Internet Identity", icon: BaseUrl + 'assets/dfinity.svg', adapter: dfinity },
     { id: 'plug', name: 'Plug Wallet', icon: BaseUrl + 'assets/plug.jpg', adapter: plug },

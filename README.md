@@ -16,6 +16,8 @@ Developers are not required to individually integrate all wallets, resulting in 
     - Plug
     - AstroX ME
     - Infinity Wallet
+    - NFID
+    - MetaMask ( MSQ - Safe ICP Wallet)
 
 ## Installation
 

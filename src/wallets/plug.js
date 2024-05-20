@@ -1,7 +1,5 @@
 if (window.ic && window.ic.plug) { window.ic.plug.init(); }
 
-
-
 export const plug = window?.ic?.plug ? {
     readyState: "Installed",
     connectWallet: async function (connectObj = { whitelist: [], host: '', }) {

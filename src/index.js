@@ -9,7 +9,8 @@ import { Principal } from '@dfinity/principal';
 const HOSTURL = "https://icp0.io";
 const ICP_DECIMAL = 10 ** 8;
 const NNS_CANISTER_ID = 'ryjl3-tyaaa-aaaaa-aaaba-cai';
-const localStorageKey = 'dfinityWallet'
+const localStorageKey = 'dfinityWallet';
+
 
 export const Artemis = class Artemis {
     accountId = false;
@@ -66,10 +67,10 @@ export const Artemis = class Artemis {
             }, 500);
         })
     };
-    async getWalletBalance(returnType = "number") { //bigInt // row
+    async getWalletBalance(returnType = "number") {
         if (!this.accountId) return 0;
-        var actor = await this.getCanisterActor(NNS_CANISTER_ID, NNS_IDL, false);
-        const balance = (await actor.account_balance_dfx({ account: this.accountId })).e8s;
+        var actor = await this.getCanisterActor(NNS_CANISTER_ID, NNS_IDL, true);
+        const balance = await actor.icrc1_balance_of({ owner: Principal.from(this.principalId) , subaccount: []});
         if (returnType == 'number') { this.balance = (parseFloat(balance) / ICP_DECIMAL) }
         else { this.balance = balance; }
         return this.balance
@@ -87,10 +88,11 @@ export const Artemis = class Artemis {
         let actor = false;
         if (isAnon) {
             if (this.anoncanisterActors[canisterId])
-                return actor = this.canisterActors[canisterId]
+                actor = this.anoncanisterActors[canisterId]
             else {
-                const pubAgent = new HttpAgent({ AnonymousIdentity, host: this.hostUrl });
-                return actor = await Actor.createActor(idl, { agent: pubAgent, canisterId: canisterId })
+                const pubAgent = new HttpAgent({ AnonymousIdentity, host: HOSTURL });
+                actor = await Actor.createActor(idl, { agent: pubAgent, canisterId: canisterId })
+                this.anoncanisterActors[canisterId] = actor;
             }
         } else {
             if (this.canisterActors[canisterId]) {
@@ -99,14 +101,15 @@ export const Artemis = class Artemis {
                 actor = await this.provider.createActor({ canisterId: canisterId, interfaceFactory: idl });
                 this.canisterActors[canisterId] = actor;
             }
-            return actor;
         }
+        return actor;
     };
     async autoConnect(connectObj = { whitelist: [NNS_CANISTER_ID], host: HOSTURL, }) {
         connectObj = this._cleanUpConnObj(connectObj);
         var walletConnected = localStorage.getItem(localStorageKey);
         var selectedWallet = this.wallets.find(o => o.id == walletConnected);
         if (!selectedWallet) return false;
+        await window.onload();
         var data = await this.connect(walletConnected, connectObj);
         return data;
     }

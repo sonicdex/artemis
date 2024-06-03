@@ -1,10 +1,15 @@
 if (window.ic && window.ic.plug) { window.ic.plug.init(); }
 
+window.onload = function() {     
+    if(window.ic.plug) plug.readyState = 'Installed';
+};
 
-
-export const plug = window?.ic?.plug ? {
-    readyState: "Installed",
+export const plug = {
+    readyState: "NotDetected",
+    url: 'https://plugwallet.ooo/',
     connectWallet: async function (connectObj = { whitelist: [], host: '', }) {
+        if(!window.ic.plug ){ this.readyState = 'NotDetected'; window.open("https://plugwallet.ooo/" );} 
+
         var publicKey = false, prinObj = false;
         var isConnected = false;
         const timeoutPromise = new Promise((resolve) => { setTimeout(() => { resolve(false); }, 3000) });
@@ -36,4 +41,4 @@ export const plug = window?.ic?.plug ? {
     disConnectWallet: async function () {
         await window.ic.plug.disconnect();
     },
-} : { readyState: 'NotDetected', url: 'https://plugwallet.ooo/' };
+}

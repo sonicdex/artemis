@@ -1,3 +1,9 @@
+
+
+window.onload = function() {     
+    if(window.ic.bitfinityWallet) bitfinity.readyState = 'Installed';
+};
+
 export const bitfinity= window.ic ? window.ic.bitfinityWallet && "InfinityWallet!" ? {
     readyState: "Installed",
     connectWallet: async function (connectObj = { whitelist: [], host: '' }) {

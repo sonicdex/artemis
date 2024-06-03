@@ -88,7 +88,6 @@ export const BatchTransaction = class BatchTransaction {
         if (!this.trxArray.length) return false;
         var self = this;
         self.activeStep = self.completed.length > 0 ? self.stepsList[self.completed.length] : self.stepsList[0];
-        console.log(this._adapterObj.walletActive);
         if (['bitfinity','plug'].includes(this._adapterObj.walletActive)) {
             for (const trxStepItem of self.trxArray) {
                 if (self.state == 'error' || self.state == 'done') break;

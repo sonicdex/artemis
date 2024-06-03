@@ -9,7 +9,8 @@ import { Principal } from '@dfinity/principal';
 const HOSTURL = "https://icp0.io";
 const ICP_DECIMAL = 10 ** 8;
 const NNS_CANISTER_ID = 'ryjl3-tyaaa-aaaaa-aaaba-cai';
-const localStorageKey = 'dfinityWallet'
+const localStorageKey = 'dfinityWallet';
+
 
 export const Artemis = class Artemis {
     accountId = false;
@@ -108,6 +109,7 @@ export const Artemis = class Artemis {
         var walletConnected = localStorage.getItem(localStorageKey);
         var selectedWallet = this.wallets.find(o => o.id == walletConnected);
         if (!selectedWallet) return false;
+        await window.onload();
         var data = await this.connect(walletConnected, connectObj);
         return data;
     }

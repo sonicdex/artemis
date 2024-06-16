@@ -88,7 +88,7 @@ export const BatchTransaction = class BatchTransaction {
         if (!this.trxArray.length) return false;
         var self = this;
         self.activeStep = self.completed.length > 0 ? self.stepsList[self.completed.length] : self.stepsList[0];
-        if (['bitfinity','plug'].includes(this._adapterObj.walletActive)) {
+        if (['bitfinity'].includes(this._adapterObj.walletActive)) {
             for (const trxStepItem of self.trxArray) {
                 if (self.state == 'error' || self.state == 'done') break;
                 if (trxStepItem.length)
@@ -101,7 +101,7 @@ export const BatchTransaction = class BatchTransaction {
                 self.state = 'error';
                 return false;
             }
-        } else if (['stoic', 'dfinity', 'astrox','metamask','nfid'].includes(this._adapterObj.walletActive)) {
+        } else if (['plug','stoic', 'dfinity', 'astrox','metamask','nfid'].includes(this._adapterObj.walletActive)) {
             try {
                 for (const trxStepItem of self.trxArray) {
                     if (self.state == 'error' || self.state == 'done') break;

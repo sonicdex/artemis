@@ -11,6 +11,7 @@ type BatchTransactType = {
     [key: string]: TransactionItem[];
 };
 const Artemis = class Artemis {
+    constructor(connectObj?: { host: string; whitelist: string[] });
     accountId: string;
     principalId: string;
     walletActive: string;

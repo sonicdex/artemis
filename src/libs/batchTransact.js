@@ -32,34 +32,36 @@ export const BatchTransaction = class BatchTransaction {
         var trxIndex = 0;
         self.trxArray.forEach((subArray, i) => {
             subArray.forEach((el, j) => {
+
                 self.trxArray[i][j].stepIndex = trxIndex;
                 self.trxArray[i][j].state = 'idle';
-                self.trxArray[i][j].onSuccess = async (data) => {
-                    const stepIndex = self.trxArray[i][j].stepIndex;
+                self.trxArray[i][j].onSuccess = async (data , _this) => {
+                    const stepIndex = _this.stepIndex;
                     if (data.err || data.Err || data.ERR) {
                         self.FailedSteps.push(self.stepsList[stepIndex]);
                         self.transactionResults[self.stepsList[stepIndex]] = data;
                         self.state = 'error';
-                        self.trxArray[i][j].state = 'error';
+                        _this.state = 'error';
                         return false;
                     } else {
                         self.completed.push(self.stepsList[stepIndex]);
                         self.activeStep = self.stepsList[stepIndex + 1];
                         self.transactionResults[self.stepsList[stepIndex]] = data;
-                        self.trxArray[i][j].state = 'done';
+                        _this.state = 'done';
                     }
-                    if (self.trxArray[i][j].updateNextStep && self.trxArray[(i + 1)]){
-                        await self.trxArray[i][j].updateNextStep(data, self.trxArray[(i + 1)][0]);
+                    if ( _this.updateNextStep && self.trxArray[(i + 1)]){
+                        await _this.updateNextStep(data, self.trxArray[(i + 1)][0]);
                      } 
                 };
-                self.trxArray[i][j].onFail = (err) => {
-                    const stepIndex = self.trxArray[i][j].stepIndex;
+
+                self.trxArray[i][j].onFail = (err , _this) => {
+                    const stepIndex =  _this.stepIndex;;
                     console.error(`error in  ${ self.stepsList[stepIndex]} ` , self.trxArray[i][j])
                     console.error(err);
                     self.FailedSteps.push(self.stepsList[stepIndex]);
                     self.activeStep = self.stepsList[stepIndex];
                     self.state = 'error';
-                    self.trxArray[i][j].state = 'error';
+                    _this.state = 'error';
                     return false;
                 }
                 trxIndex++;
@@ -71,6 +73,7 @@ export const BatchTransaction = class BatchTransaction {
         if (this.state != "error") return false;
         this.trxArray = this.trxArray.map(innerArray => innerArray.filter(item => item.state !== 'done'));
         this.state = 'running';
+        this._info ='';
         this.FailedSteps = [];
         var data = await this._processBatch();
         return data;
@@ -114,8 +117,8 @@ export const BatchTransaction = class BatchTransaction {
                                 if (trxItem.args) { resp = await actor[trxItem.methodName](...trxItem.args);}
                                 else { resp = await actor[trxItem.methodName]();}
                             }else { await trxItem.onFail(resp);}
-                            if (resp) { await trxItem.onSuccess(resp); }
-                            else { await trxItem.onFail(resp); }
+                            if (resp) { await trxItem.onSuccess(resp, trxItem); }
+                            else { await trxItem.onFail(resp , trxItem); }
                         }
                     }
                 }
@@ -128,6 +131,7 @@ export const BatchTransaction = class BatchTransaction {
                 }
             } catch (error) {
                 self.state = 'error';
+                console.error(error);
                 self._info = error;
                 return false;
             }

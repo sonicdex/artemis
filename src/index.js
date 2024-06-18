@@ -90,7 +90,7 @@ export const Artemis = class Artemis {
             if (this.anoncanisterActors[canisterId])
                 actor = this.anoncanisterActors[canisterId]
             else {
-                const pubAgent = new HttpAgent({ AnonymousIdentity, host: HOSTURL });
+                const pubAgent = new HttpAgent({ AnonymousIdentity, host: this._connectObject.host });
                 actor = await Actor.createActor(idl, { agent: pubAgent, canisterId: canisterId })
                 this.anoncanisterActors[canisterId] = actor;
             }
@@ -130,8 +130,7 @@ export const principalIdFromHex = getAccountIdentifier;
 export const ArtemisAdapter = new Artemis({ whitelist: [NNS_CANISTER_ID], host: HOSTURL }); 
 
 if (window) {
-    const artemis = new Artemis({ whitelist: [NNS_CANISTER_ID], host: HOSTURL });
-    window.artemis = artemis;
+    window.artemis = Artemis;
     window.artemis.BatchTransact = BatchTransaction;
     window.artemis.dfinity = {  AnonymousIdentity, Principal }
 }

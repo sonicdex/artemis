@@ -15,6 +15,8 @@ export const plug = {
         const timeoutPromise = new Promise((resolve) => { setTimeout(() => { resolve(false); }, 3000) });
         isConnected = await Promise.race([window.ic.plug.isConnected(), timeoutPromise]);
 
+        console.log(isConnected ,'isConnected')
+
         try {
             if (isConnected) {
                 await window.ic.plug.createAgent(connectObj)

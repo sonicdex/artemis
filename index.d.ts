@@ -1,4 +1,4 @@
-interface TransactionItem {
+export interface TransactionItem {
     canisterId: string;
     methodName: string;
     args: any;
@@ -11,6 +11,7 @@ type BatchTransactType = {
     [key: string]: TransactionItem[];
 };
 const Artemis = class Artemis {
+    constructor(connectObj?: { host: string; whitelist: string[] });
     accountId: string;
     principalId: string;
     walletActive: string;
@@ -25,7 +26,7 @@ const Artemis = class Artemis {
     isLoaded(): any;
     getWalletBalance(returnType: string): number;
     requestICPTransfer(transferRequest: any): any;
-    getCanisterActor(canisterId: string, idl: any, isAnon: boolean): any;
+    getCanisterActor(canisterId: string, idl: any, isAnon: boolean , isForced:boolean): any;
     batchTransact(transactions: BatchTransactType): any;
     trxArray:[TransactionItem[]]
 }
@@ -39,7 +40,7 @@ const BatchTransact = class BatchTransact {
     previousStep: string;
     activeStep: string;
     nextStep: string;
-    FailedStep: string;
+    failedSteps: string[];
     transactionResults: {};
     trxArray:[];
     execute(): any;

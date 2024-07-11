@@ -13,7 +13,7 @@ export const plug = {
         var publicKey = false, prinObj = false;
         var isConnected = false;
         const timeoutPromise = new Promise((resolve) => { setTimeout(() => { resolve(false); }, 3000) });
-        isConnected = await Promise.race([window.ic.plug.isConnected(), timeoutPromise]);
+        isConnected = await window.ic.plug.isConnected(); //Promise.race([window.ic.plug.isConnected(), timeoutPromise]);
 
         try {
             if (isConnected) {

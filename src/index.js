@@ -22,7 +22,7 @@ export const Artemis = class Artemis {
     anoncanisterActors = [];
     connectedWalletInfo = {};
     wallets = walletList;
-    _connectObject={ whitelist: [NNS_CANISTER_ID], host: HOSTURL, }
+    _connectObject = { whitelist: [NNS_CANISTER_ID], host: HOSTURL, }
     _cleanUpConnObj(connectObj) {
         connectObj.whitelist.push(NNS_CANISTER_ID);
         connectObj.whitelist = Array.from(new Set([...connectObj.whitelist]));
@@ -70,7 +70,7 @@ export const Artemis = class Artemis {
     async getWalletBalance(returnType = "number") {
         if (!this.accountId) return 0;
         var actor = await this.getCanisterActor(NNS_CANISTER_ID, NNS_IDL, true);
-        const balance = await actor.icrc1_balance_of({ owner: Principal.from(this.principalId) , subaccount: []});
+        const balance = await actor.icrc1_balance_of({ owner: Principal.from(this.principalId), subaccount: [] });
         if (returnType == 'number') { this.balance = (parseFloat(balance) / ICP_DECIMAL) }
         else { this.balance = balance; }
         return this.balance
@@ -84,18 +84,26 @@ export const Artemis = class Artemis {
             reject(false)
         })
     };
-    async getCanisterActor(canisterId, idl, isAnon = false) {
+    async getCanisterActor(canisterId, idl, isAnon = false, isForced = false) {
         let actor = false;
         if (isAnon) {
-            if (this.anoncanisterActors[canisterId])
+            if (isForced) {
+                const pubAgent = new HttpAgent({ AnonymousIdentity, host: this._connectObject.host });
+                actor = await Actor.createActor(idl, { agent: pubAgent, canisterId: canisterId })
+                this.anoncanisterActors[canisterId] = actor;
+            } else if (this.anoncanisterActors[canisterId])
                 actor = this.anoncanisterActors[canisterId]
             else {
-                const pubAgent = new HttpAgent({ AnonymousIdentity, host: HOSTURL });
+                const pubAgent = new HttpAgent({ AnonymousIdentity, host: this._connectObject.host });
                 actor = await Actor.createActor(idl, { agent: pubAgent, canisterId: canisterId })
                 this.anoncanisterActors[canisterId] = actor;
             }
         } else {
-            if (this.canisterActors[canisterId]) {
+            if (isForced) {
+                actor = await this.provider.createActor({ canisterId: canisterId, interfaceFactory: idl });
+                this.canisterActors[canisterId] = actor;
+            }
+            else if (this.canisterActors[canisterId]) {
                 actor = this.canisterActors[canisterId];
             } else {
                 actor = await this.provider.createActor({ canisterId: canisterId, interfaceFactory: idl });
@@ -127,11 +135,10 @@ export const BatchTransact = BatchTransaction;
 
 export const principalIdFromHex = getAccountIdentifier;
 
-export const ArtemisAdapter = new Artemis({ whitelist: [NNS_CANISTER_ID], host: HOSTURL }); 
+export const ArtemisAdapter = new Artemis({ whitelist: [NNS_CANISTER_ID], host: HOSTURL });
 
 if (window) {
-    const artemis = new Artemis({ whitelist: [NNS_CANISTER_ID], host: HOSTURL });
-    window.artemis = artemis;
+    window.artemis = Artemis;
     window.artemis.BatchTransact = BatchTransaction;
-    window.artemis.dfinity = {  AnonymousIdentity, Principal }
+    window.artemis.dfinity = { AnonymousIdentity, Principal }
 }

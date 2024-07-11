@@ -68,7 +68,7 @@ export const BatchTransaction = class BatchTransaction {
                     self.activeStep = self.stepsList[stepIndex];
                     self.state = 'error';
                     _this.state = 'error';
-                    if (onFailCall) await onFailCall(data)
+                    if (onFailCall) await onFailCall(err)
                     return false;
                 }
                 trxIndex++;

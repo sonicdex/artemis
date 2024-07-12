@@ -1,4 +1,4 @@
-export interface TransactionItem {
+interface TransactionItem {
     canisterId: string;
     methodName: string;
     args: any;
@@ -27,7 +27,7 @@ const Artemis = class Artemis {
     isLoaded(): any;
     getWalletBalance(returnType: string): number;
     requestICPTransfer(transferRequest: any): any;
-    getCanisterActor(canisterId: string, idl: any, isAnon: boolean , isForced:boolean): any;
+    getCanisterActor(canisterId: string, idl: any, isAnon: boolean , isForced?:boolean): any;
     batchTransact(transactions: BatchTransactType): any;
     trxArray:[TransactionItem[]]
 }
@@ -51,8 +51,5 @@ const BatchTransact = class BatchTransact {
 
 const principalIdFromHex:(params:string)=> {};
 declare module 'artemis-web3-adapter' {
-    export { Artemis }
-    export { BatchTransact };
-    export{ principalIdFromHex };
-    export { ArtemisAdapter};
+    export { Artemis , BatchTransact , principalIdFromHex , ArtemisAdapter , TransactionItem , BatchTransactType}
 }

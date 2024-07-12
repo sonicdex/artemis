@@ -6,6 +6,7 @@ export interface TransactionItem {
     onSuccess: any;
     onFail: any;
     updateNextStep: any;
+    skipCondition:string
 }
 type BatchTransactType = {
     [key: string]: TransactionItem[];

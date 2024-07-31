@@ -40,7 +40,7 @@ const BatchTransact = class BatchTransact {
     completed: string[];
     previousStep: string;
     activeStep: string;
-    nextStep: string;
+    nextStep: ()=>void;
     failedSteps: string[];
     transactionResults: {};
     trxArray:[];

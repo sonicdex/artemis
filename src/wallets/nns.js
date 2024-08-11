@@ -2,9 +2,9 @@ import { Actor, HttpAgent } from '@dfinity/agent';
 import { getAccountIdentifier } from '../libs/identifier-utils';
 import { AuthClient } from "@dfinity/auth-client";
 
-export const dfinity = {
-    readyState: "Loadable", url: "https://identity.ic0.app",
-    authClient:false,
+export const nns = {
+    readyState: "Loadable", url: "http://localhost:4943",
+    authClient: true,
     connectWallet: async function (connectObj = { whitelist: [], host: '' }) {
         var self = this, returnData = {};
         self.authClient = await AuthClient.create();
@@ -12,7 +12,7 @@ export const dfinity = {
             var isConnected = await  self.authClient.isAuthenticated();
             if (!isConnected) {
                 self.authClient.login({
-                    identityProvider: 'https://identity.ic0.app',
+                    identityProvider: "http://rdmx6-jaaaa-aaaaa-aaadq-cai.localhost:4943",
                     onSuccess: async () => {
                         returnData = await continueLogin();
                         resolve(returnData);
@@ -26,6 +26,7 @@ export const dfinity = {
                 var identity = await  self.authClient.getIdentity();
                 var principal = await identity?.getPrincipal();
                 self.agent = new HttpAgent({ identity: identity, host: connectObj.host });
+                self.agent.fetchRootKey();
                 var sid = await getAccountIdentifier(identity?.getPrincipal().toString());
                 
                 self.createActor = async function (connObj = { canisterId: '', interfaceFactory: false }) {

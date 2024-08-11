@@ -1,4 +1,13 @@
-import { Artemis, ArtemisAdapter } from './src';
-import { BatchTransact } from './src';
+// index.js 
 
-export { Artemis , BatchTransact , ArtemisAdapter };
+import { PnP } from './PnP';
+import { BatchTransact } from './libs/batchTransact';
+import { principalIdFromHex } from './libs/identifier-utils';
+
+export {
+  PnP,
+  BatchTransact,
+  principalIdFromHex
+};
+
+export default PnP;

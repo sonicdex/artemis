@@ -1,12 +1,14 @@
 {
-  "name": "artemis-web3-adapter",
-  "version": "1.1.5",
-  "description": "dfinity wallet adapter for connecting different wallets in IC",
-  "main": "index.js",
+  "name": "w98-plug-n-play",
+  "version": "0.1.0",
+  "description": "Wallet wrapper/adapter for connecting different wallets on the Internet Computer",
+  "main": "dist/w98-plug-n-play.mjs",
   "scripts": {
-    "build": "webpack --mode production"
+    "dev": "vite",
+    "build": "vite build",
+    "preview": "vite preview"
   },
-  "author": "code_lion",
+  "author": "windoge98",
   "license": "ISC",
   "dependencies": {
     "@astrox/sdk-web": "^0.1.41",
@@ -23,11 +25,10 @@
     "crypto-js": "^4.2.0"
   },
   "devDependencies": {
-    "webpack": "^5.75.0",
-    "webpack-cli": "^5.0.1"
+    "vite": "^4.5.0"
   },
   "engines": {
-    "npm": ">=7.0.0",
-    "node": ">=14.0.0"
+    "pnpm": ">=9.0.0",
+    "node": ">=20.0.0"
   }
 }

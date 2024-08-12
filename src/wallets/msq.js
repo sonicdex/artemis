@@ -1,7 +1,7 @@
 import { MsqClient } from "@fort-major/msq-client";
 
 import { Actor, HttpAgent } from "@dfinity/agent";
-import { getAccountIdentifier } from '../libs/identifier-utils';
+import { getAccountIdentifier } from '../utils/identifierUtils';
 
 export const metaMask = window?.ethereum?.isMetaMask ? {
     readyState: "Installed",

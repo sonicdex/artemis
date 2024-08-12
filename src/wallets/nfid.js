@@ -1,5 +1,5 @@
 import { Actor, HttpAgent } from "@dfinity/agent";
-import { getAccountIdentifier } from "../libs/identifier-utils";
+import { getAccountIdentifier } from "../utils/identifierUtils";
 import { AuthClient } from "@dfinity/auth-client";
 
 export const nfid = {

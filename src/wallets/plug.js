@@ -7,7 +7,7 @@ window.onload = function() {
 export const plug = {
     readyState: "NotDetected",
     url: 'https://plugwallet.ooo/',
-    connectWallet: async function (connectObj = { whitelist: [], host: '', }) {
+    connectWallet: async function (connectObj = { whitelist: [], host: 'http://localhost:4943', identityProvider: '' }) {   
         if(!window.ic.plug ){ this.readyState = 'NotDetected'; window.open("https://plugwallet.ooo/" );} 
 
         var publicKey = false, prinObj = false;
@@ -34,7 +34,8 @@ export const plug = {
                 }
                 return window.ic.plug.batchTransactions(t1)
             };
-
+            console.log("plug data", sess)
+            console.log("plug data", prinObj.toString())
             return { accountId: sess.accountId, principalId: prinObj.toString() }
         } catch (e) { return false; }
     },

@@ -1,6 +1,6 @@
 import { Actor, HttpAgent } from '@dfinity/agent';
 
-import { getAccountIdentifier } from '../libs/identifier-utils';
+import { getAccountIdentifier } from '../utils/identifierUtils';
 import { IC } from "@astrox/sdk-web";
 import { AstroXWebViewHandler } from '@astrox/sdk-webview';
 import { Principal } from '@dfinity/principal'

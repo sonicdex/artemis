@@ -1,4 +1,4 @@
-import { StoicIdentity } from '../libs/stoicidentity';
+import { StoicIdentity } from '../utils/stoicidentity';
 import { Actor, HttpAgent } from '@dfinity/agent';
 
 export const stoic = {

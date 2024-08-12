@@ -5,13 +5,18 @@ export default defineConfig({
   build: {
     lib: {
       entry: path.resolve(__dirname, 'src/index.js'),
-      name: 'W98PlugNPlay',
-      fileName: 'w98-plug-n-play', // This will produce 'bundle.js'
+      name: 'PlugNPlay',
+      fileName: 'plug-n-play',
     },
     rollupOptions: {
       external: [
         '@astrox/sdk-web',
         '@astrox/sdk-webview',
+        '@dfinity/auth-client',
+        '@dfinity/principal',
+        '@dfinity/candid',
+        '@dfinity/agent',
+        '@dfinity/identity',
         '@fort-major/msq-client',
         '@fort-major/msq-shared'
       ],
@@ -19,6 +24,11 @@ export default defineConfig({
         globals: {
           '@astrox/sdk-web': 'astrox.sdkWeb',
           '@astrox/sdk-webview': 'astrox.sdkWebview',
+          '@dfinity/auth-client': 'dfinity.authClient',
+          '@dfinity/principal': 'dfinity.principal',
+          '@dfinity/candid': 'dfinity.candid',
+          '@dfinity/agent': 'dfinity.agent',
+          '@dfinity/identity': 'dfinity.identity',
           '@fort-major/msq-client': 'fortMajor.msqClient',
           '@fort-major/msq-shared': 'fortMajor.msqShared'
         }

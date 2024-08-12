@@ -5,7 +5,9 @@ import { stoic } from './stoic';
 import { astrox } from './astroxme';
 import { nfid } from './nfid';
 import { metaMask } from './msq';
-import dfinityLogo from '../../assets/dfinity.svg';
+import dfinityLogo from '../assets/dfinity.svg';
+import nfidLogo from '../assets/nfid.svg';
+import stoicLogo from '../assets/stoic.png';
 
 const BaseUrl = "https://github.com/microdao-corporation/w98-pnp/main/";
 
@@ -14,7 +16,7 @@ export const walletList = [
     // { id: 'plug', name: 'Plug Wallet', icon: BaseUrl + 'assets/plug.jpg', adapter: plug },
     // { id: 'astrox', name: 'AstroX ME', icon: BaseUrl + 'assets/astroxme.webp', adapter: astrox },
     // { id: 'bitfinity', name: 'Bitfinity Wallet', icon: BaseUrl + 'assets/bitfinity.svg', adapter: bitfinity },
-    // { id: 'stoic', name: 'Stoic Wallet', icon: BaseUrl + 'assets/stoic.png', adapter: stoic },
-    // { id: 'nfid', name: 'NFID', icon: BaseUrl + 'assets/nfid.svg', adapter: nfid },
+    // { id: 'stoic', name: 'Stoic Wallet', icon: stoicLogo, adapter: stoic },
+    { id: 'nfid', name: 'NFID', icon: nfidLogo, adapter: nfid },
     // { id: 'metamask', name: 'MetaMask', icon: BaseUrl + 'assets/metamask.svg', adapter: metaMask },
 ];

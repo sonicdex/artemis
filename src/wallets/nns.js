@@ -5,14 +5,14 @@ import { AuthClient } from "@dfinity/auth-client";
 export const nns = {
     readyState: "Loadable", url: "http://localhost:4943",
     authClient: true,
-    connectWallet: async function (connectObj = { whitelist: [], host: '' }) {
+    connectWallet: async function (connectObj = { whitelist: [], host: '', identityProvider: '' }) {
         var self = this, returnData = {};
         self.authClient = await AuthClient.create();
         return new Promise(async (resolve, reject) => {
             var isConnected = await  self.authClient.isAuthenticated();
             if (!isConnected) {
                 self.authClient.login({
-                    identityProvider: "http://rdmx6-jaaaa-aaaaa-aaadq-cai.localhost:4943",
+                    identityProvider,
                     onSuccess: async () => {
                         returnData = await continueLogin();
                         resolve(returnData);

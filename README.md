@@ -15,6 +15,7 @@ Plug N Play simplifies the integration of Internet Computer wallets into your de
 ## Supported Wallets
 
 - Internet Identity
+- NFID
 - More to be added
 
 ## Installation
@@ -22,7 +23,7 @@ Plug N Play simplifies the integration of Internet Computer wallets into your de
 Install Plug N Play using npm:
 
 ```bash
-npm install w98-plug-n-play
+npm install @windoge98/plug-n-play
 ```
 
 ## Basic Usage
@@ -54,7 +55,7 @@ export const Canisters = {
 2. Import the PnP class, necessary dependencies, and your canisters:
 
 ```javascript
-import { PnP } from 'w98-plug-n-play';
+import { PnP } from '@windoge98/plug-n-play';
 import { AuthClient } from '@dfinity/auth-client';
 import { Actor, HttpAgent } from '@dfinity/agent';
 import { canisters, Canisters } from './canisters';
@@ -198,7 +199,7 @@ async function reconnectWallet() {
 For complex operations involving multiple transactions, use the BatchTransact class:
 
 ```javascript
-import { BatchTransact } from 'w98-plug-n-play';
+import { BatchTransact } from '@windoge98/plug-n-play';
 import { Principal } from '@dfinity/principal';
 import { canisters, Canisters } from './canisters';
 

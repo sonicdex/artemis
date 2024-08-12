@@ -221,6 +221,7 @@ export const principalIdFromHex = getAccountIdentifier;
 export const PnPAdapter = new PnP({
   whitelist: [NNS_CANISTER_ID],
   host: HOSTURL,
+	identityProvider: "",
 });
 
 if (window) {
@@ -228,3 +229,4 @@ if (window) {
   window.pnp.BatchTransact = BatchTransaction;
   window.pnp.nns = { AnonymousIdentity, Principal };
 }
+

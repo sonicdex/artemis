@@ -6639,7 +6639,7 @@ account-id`, $e = (t) => t < 0 ? (Number(t) >>> 0).toString(16) : Number(t).toSt
     return c.authClient = await Dr.create(), new Promise(async (a, h) => {
       var d = await c.authClient.isAuthenticated();
       d ? (o = await g(), a(o)) : c.authClient.login({
-        identityProvider,
+        identityProvider: t.identityProvider,
         onSuccess: async () => {
           o = await g(), a(o);
         }
@@ -6985,7 +6985,8 @@ const tn = "data:image/svg+xml,%3c?xml%20version='1.0'%20encoding='utf-8'?%3e%3c
   }
 }, vn = Tt, En = G0, An = new Ht({
   whitelist: [b0],
-  host: H0
+  host: H0,
+  identityProvider: ""
 });
 window && (window.pnp = Ht, window.pnp.BatchTransact = Tt, window.pnp.nns = { AnonymousIdentity: br, Principal: kr });
 export {

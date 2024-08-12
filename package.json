@@ -1,23 +1,33 @@
 {
-  "name": "w98-plug-n-play",
-  "version": "0.1.0",
+  "name": "@shillgatesy/plug-n-play",
+  "version": "0.1.2",
   "description": "Wallet wrapper/adapter for connecting different wallets on the Internet Computer",
-  "main": "dist/w98-plug-n-play.mjs",
+  "main": "dist/plug-n-play.umd.js",
+  "module": "dist/plug-n-play.es.js",
+  "exports": {
+    ".": {
+      "import": "./dist/plug-n-play.es.js",
+      "require": "./dist/plug-n-play.umd.js"
+    }
+  },
+  "files": [
+    "dist"
+  ],
   "scripts": {
     "dev": "vite",
     "build": "vite build",
     "preview": "vite preview"
   },
   "author": "windoge98",
-  "license": "ISC",
+  "license": "MIT",
   "dependencies": {
     "@astrox/sdk-web": "^0.1.41",
     "@astrox/sdk-webview": "^0.1.41",
-    "@dfinity/agent": "^1.2.0",
-    "@dfinity/auth-client": "^1.2.0",
-    "@dfinity/candid": "^1.2.0",
-    "@dfinity/identity": "^1.2.0",
-    "@dfinity/principal": "^1.2.0",
+    "@dfinity/agent": "^2.0.0",
+    "@dfinity/auth-client": "^2.0.0",
+    "@dfinity/candid": "^2.0.0",
+    "@dfinity/identity": "^2.0.0",
+    "@dfinity/principal": "^2.0.0",
     "@fort-major/msq-client": "^0.3.4",
     "@fort-major/msq-shared": "^0.3.3",
     "buffer": "^6.0.3",
@@ -25,7 +35,7 @@
     "crypto-js": "^4.2.0"
   },
   "devDependencies": {
-    "vite": "^4.5.0"
+    "vite": "^5.4.0"
   },
   "engines": {
     "pnpm": ">=9.0.0",

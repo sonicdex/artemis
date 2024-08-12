@@ -45,12 +45,6 @@ importers:
         specifier: ^4.2.0
         version: 4.2.0
     devDependencies:
-      '@types/node':
-        specifier: ^20.0.0
-        version: 20.14.15
-      typescript:
-        specifier: ^5.0.0
-        version: 5.5.4
       vite:
         specifier: ^5.4.0
         version: 5.4.0(@types/node@20.14.15)(terser@5.31.5)
@@ -3646,11 +3640,6 @@ packages:
   type-fest@0.7.1:
     resolution: {integrity: sha512-Ne2YiiGN8bmrmJJEuTWTLJR32nh/JdL1+PSicowtNb0WFpn59GK8/lfD61bVtzguz7b3PBt74nxpv/Pw5po5Rg==}
     engines: {node: '>=8'}
-
-  typescript@5.5.4:
-    resolution: {integrity: sha512-Mtq29sKDAEYP7aljRgtPOpTvOfbwRWlS6dPRzwjdE+C0R4brX/GUyhHSecbHMFLNBLcJIPt9nl9yG5TZ1weH+Q==}
-    engines: {node: '>=14.17'}
-    hasBin: true
 
   undici-types@5.26.5:
     resolution: {integrity: sha512-JlCMO+ehdEIKqlFxk6IfVoAUVmgz7cU7zD/h9XZ0qzeosSHmUJVOzSQvvYSYWXkFXC+IfLKSIffhv0sVZup6pA==}
@@ -8565,8 +8554,6 @@ snapshots:
   type-fest@0.21.3: {}
 
   type-fest@0.7.1: {}
-
-  typescript@5.5.4: {}
 
   undici-types@5.26.5: {}
 

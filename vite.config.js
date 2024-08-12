@@ -6,7 +6,8 @@ export default defineConfig({
     lib: {
       entry: path.resolve(__dirname, 'src/index.js'),
       name: 'PlugNPlay',
-      fileName: 'plug-n-play',
+      formats: ['es', 'umd'],
+      fileName: (format) => `plug-n-play.${format}.js`
     },
     rollupOptions: {
       external: [

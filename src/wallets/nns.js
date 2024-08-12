@@ -12,7 +12,7 @@ export const nns = {
             var isConnected = await  self.authClient.isAuthenticated();
             if (!isConnected) {
                 self.authClient.login({
-                    identityProvider,
+                    identityProvider: connectObj.identityProvider,
                     onSuccess: async () => {
                         returnData = await continueLogin();
                         resolve(returnData);

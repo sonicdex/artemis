@@ -123,7 +123,7 @@ export class PnP {
     let actor = false;
     if (isAnon) {
       if (isForced) {
-        const pubAgent = new HttpAgent({
+        const pubAgent = HttpAgent.createSync({
           AnonymousIdentity,
           host: this._connectObject.host,
         });
@@ -138,34 +138,41 @@ export class PnP {
       } else if (this.anoncanisterActors[canisterId])
         actor = this.anoncanisterActors[canisterId];
       else {
-        const pubAgent = new HttpAgent({
+        const pubAgent = HttpAgent.createSync({
           AnonymousIdentity,
           host: this._connectObject.host,
         });
         if (this._connectObject.host.includes("localhost")) {
           await pubAgent.fetchRootKey();
         }    
-        actor = await Actor.createActor(idl, {
+        actor = await this.provider.createActor(idl, {
           agent: pubAgent,
+          host: this._connectObject.host,
           canisterId: canisterId,
         });
         this.anoncanisterActors[canisterId] = actor;
       }
     } else {
-      if (isForced) {
-        actor = await Actor.createActor({
-          canisterId: canisterId,
-          interfaceFactory: idl,
-        });
-        this.canisterActors[canisterId] = actor;
-      } else if (this.canisterActors[canisterId]) {
-        actor = this.canisterActors[canisterId];
+      if (this.walletActive === 'bitfinity') {
+        // Bitfinity-specific actor creation
+        actor = await this.provider.createActor(canisterId, idl, this._connectObject.host);
       } else {
-        actor = await Actor.createActor({
-          canisterId: canisterId,
-          interfaceFactory: idl,
-        });
-        this.canisterActors[canisterId] = actor;
+        // Existing actor creation for other wallets
+        if (isForced) {
+          actor = await Actor.createActor({
+            canisterId: canisterId,
+            interfaceFactory: idl,
+          });
+          this.canisterActors[canisterId] = actor;
+        } else if (this.canisterActors[canisterId]) {
+          actor = this.canisterActors[canisterId];
+        } else {
+          actor = await Actor.createActor({
+            canisterId: canisterId,
+            interfaceFactory: idl,
+          });
+          this.canisterActors[canisterId] = actor;
+        }
       }
     }
     return actor;
@@ -175,28 +182,49 @@ export class PnP {
     if (!this.provider) {
       throw new Error("Wallet not connected");
     }
-
+  
     try {
-      const authClient = await AuthClient.create();
-      const identity = authClient.getIdentity();
-      const agentConf = { identity, host: this._connectObject.host };
-      const agent = new HttpAgent(agentConf);
-
-      if (this._connectObject.host.includes("localhost")) {
-        await agent.fetchRootKey();
+      if (this.walletActive === 'bitfinity') {
+        console.log('Creating signed actor for Bitfinity wallet');
+        console.log('Canister ID:', canisterId);
+        console.log('IDL:', idl);
+        
+        // Ensure the wallet is connected
+        const isConnected = await window.ic.infinityWallet.isConnected();
+        if (!isConnected) {
+          console.log('Bitfinity wallet not connected, attempting to connect');
+          await window.ic.infinityWallet.requestConnect({ whitelist: [canisterId] });
+        }
+  
+        // Create the actor
+        const actor = await window.ic.infinityWallet.createActor({
+          canisterId,
+          interfaceFactory: idl,
+        });
+  
+        console.log('Actor created successfully:', actor);
+        return actor;
+      } else {
+        // Existing signed actor creation for other wallets
+        const authClient = await AuthClient.create();
+        const identity = authClient.getIdentity();
+        const agentConf = { identity, host: this._connectObject.host };
+        const agent = new HttpAgent(agentConf);
+  
+        if (this._connectObject.host.includes("localhost")) {
+          await agent.fetchRootKey();
+        }
+  
+        const actor = Actor.createActor(idl, {
+          agent,
+          canisterId,
+        });
+  
+        return actor;
       }
-
-      const actor = Actor.createActor(idl, {
-        agent,
-        canisterId,
-      });
-
-      return actor;
     } catch (error) {
-      console.error(
-        `Error creating signed actor for canister ${canisterId}:`,
-        error
-      );
+      console.error(`Error creating signed actor for canister ${canisterId}:`, error);
+      console.error('Error stack:', error.stack);
       throw error;
     }
   }

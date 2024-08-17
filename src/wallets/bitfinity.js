@@ -1,30 +1,31 @@
-
-
 window.onload = function() {     
-    if(window.ic.bitfinityWallet) bitfinity.readyState = 'Installed';
+    if(window.ic && window.ic.infinityWallet) bitfinity.readyState = 'Installed';
 };
 
-export const bitfinity= window.ic ? window.ic.bitfinityWallet && "InfinityWallet!" ? {
+export const bitfinity = window.ic && window.ic.infinityWallet ? {
     readyState: "Installed",
-    connectWallet: async function (connectObj = { whitelist: [], host: '' }) {
-        var isconn = await window.ic.bitfinityWallet.isConnected();
+    connectWallet: async function (connectObj = { whitelist: [], host: 'http://localhost:4943', identityProvider: '' }) {
+        var isconn = await window.ic.infinityWallet.isConnected();
         if (!isconn) {
-            let s = await window.ic.bitfinityWallet.requestConnect(connectObj)
+            await window.ic.infinityWallet.requestConnect({ whitelist: connectObj.whitelist });
         }
-        if (!window.ic.bitfinityWallet.agent) {
-            await window.ic.bitfinityWallet.requestConnect(connectObj)
-        }
-        this.agent = window.ic.bitfinityWallet.agent;
+        this.agent = window.ic.infinityWallet;
 
-        this.getPrincipal = async function () { return window.ic.bitfinityWallet.getPrincipal() }
-        this.createActor = async function (t1) { return window.ic.bitfinityWallet.createActor(t1) };
-        this.batchTransactions = async function (t1) { return window.ic.bitfinityWallet.batchTransactions(t1)};
+        this.getPrincipal = async function () { return window.ic.infinityWallet.getPrincipal() };
+        this.createActor = async function (canisterId, interfaceFactory, host) { 
+            return window.ic.infinityWallet.createActor({
+                canisterId,
+                interfaceFactory,
+                host: 'http://rdmx6-jaaaa-aaaaa-aaadq-cai.localhost:4943',
+            });
+        };
+        this.batchTransactions = async function (t1) { return window.ic.infinityWallet.batchTransactions(t1) };
 
         var prinObj = await this.getPrincipal();
-        var acntid = await window.ic.bitfinityWallet.getAccountID()
-        return { accountId: acntid, principalId: prinObj.toString() }
+        var acntid = await window.ic.infinityWallet.getAccountID();
+        return { accountId: acntid, principalId: prinObj.toString() };
     },
     disConnectWallet: async function () {
-        await window.ic.bitfinityWallet.disconnect();
+        await window.ic.infinityWallet.disconnect();
     },
-} : { readyState: 'NotDetected', url: 'https://wallet.infinityswap.one/' } : { readyState: 'NotDetected', url: 'https://wallet.infinityswap.one/' };
+} : { readyState: 'NotDetected', url: 'https://wallet.infinityswap.one/' };

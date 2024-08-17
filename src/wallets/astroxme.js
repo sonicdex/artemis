@@ -14,7 +14,7 @@ const astroxConfig = {
     ledgerHost: "https://icp0.io/",
 }
 
-const astroxInit = async (host = '', whitelist = []) => {
+const astroxInit = async (host = '', whitelist = [], identityProvider = '') => {
     const ic = await IC.create({
         useFrame: !(window.innerWidth < 768),
         signerProviderUrl: `${astroxConfig.providerUrl}/#signer`,
@@ -33,7 +33,7 @@ if (!window.ic?.astrox) astroxInit()
 
 export const astrox = {
     readyState: "Loadable", url: "https://63k2f-nyaaa-aaaah-aakla-cai.raw.ic0.app",
-    connectWallet: async function (connectObj = { whitelist: [], host: '' }) {
+    connectWallet: async function (connectObj = { whitelist: [], host: '', identityProvider: '' }) {
         var self = this;
         return new Promise(async (resolve, reject) => {
             //check app is  in ME App.

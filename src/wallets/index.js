@@ -19,12 +19,12 @@ import metamaskLogo from '../assets/metamask.svg';
 
 export const walletList = [
     { id: 'nns', name: "Internet Identity", icon: dfinityLogo, adapter: nns },
-    { id: 'plug', name: 'Plug Wallet', icon: plugLogo, adapter: plug },
-    { id: 'astrox', name: 'AstroX ME', icon: astroxLogo, adapter: astrox },
-    { id: 'bitfinity', name: 'Bitfinity Wallet', icon: bitfinityLogo, adapter: bitfinity },
-    { id: 'stoic', name: 'Stoic Wallet', icon: stoicLogo, adapter: stoic },
+    // { id: 'plug', name: 'Plug Wallet', icon: plugLogo, adapter: plug },
+    // { id: 'astrox', name: 'AstroX ME', icon: astroxLogo, adapter: astrox },
+    // { id: 'bitfinity', name: 'Bitfinity Wallet', icon: bitfinityLogo, adapter: bitfinity },
+    // { id: 'stoic', name: 'Stoic Wallet', icon: stoicLogo, adapter: stoic },
     { id: 'nfid', name: 'NFID', icon: nfidLogo, adapter: nfid },
-    { id: 'metamask', name: 'MetaMask', icon: metamaskLogo, adapter: metaMask },
+    // { id: 'metamask', name: 'MetaMask', icon: metamaskLogo, adapter: metaMask },
 ];
 
 // Export individual wallet modules

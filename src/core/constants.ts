@@ -1,4 +1,4 @@
-// Path: src/core/constants.js
+// Path: src/core/constants.ts
 
 export const HOSTURL = "http://localhost:4943";
 export const ICP_DECIMAL = 10 ** 8;

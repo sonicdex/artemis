@@ -1,11 +1,17 @@
-// Path: src/index.js
+// Path: src/index.ts
 
 import { AnonymousIdentity } from "@dfinity/agent";
 import { Principal } from "@dfinity/principal";
-import { PnP } from './core/PnP';
+import PnP from './core/PnP';
 import { BatchTransaction } from './utils/batchTransact';
 import { getAccountIdentifier } from './utils/identifierUtils';
 import { HOSTURL, NNS_CANISTER_ID } from './core/constants';
+
+declare global {
+  interface Window {
+    pnp: any;
+  }
+}
 
 const BatchTransact = BatchTransaction;
 const principalIdFromHex = getAccountIdentifier;

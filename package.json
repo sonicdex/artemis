@@ -1,6 +1,6 @@
 {
   "name": "@windoge98/plug-n-play",
-  "version": "0.1.1",
+  "version": "0.1.2",
   "description": "Wallet wrapper/adapter for connecting different wallets on the Internet Computer",
   "main": "dist/plug-n-play.umd.js",
   "module": "dist/plug-n-play.es.js",

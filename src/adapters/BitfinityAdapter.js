@@ -1,3 +1,5 @@
+// src/adapters/BitfinityAdapter.js
+
 window.onload = function() {     
     if(window.ic && window.ic.infinityWallet) bitfinity.readyState = 'Installed';
 };

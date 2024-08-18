@@ -1,3 +1,5 @@
+// src/adapters/AstroXAdapter.js
+
 import { Actor, HttpAgent } from '@dfinity/agent';
 
 import { getAccountIdentifier } from '../utils/identifierUtils';

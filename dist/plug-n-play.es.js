@@ -6528,31 +6528,12 @@ const ze = "data:image/svg+xml,%3c?xml%20version='1.0'%20encoding='utf-8'?%3e%3c
     icon: ze,
     adapter: Ue
   },
-  // {
-  //   id: "nfid",
-  //   name: "NFID (Google Login)",
-  //   icon: nfidLogo,
-  //   adapter: NFIDAdapter,
-  // },
   {
     id: "plug",
     name: "Plug Wallet",
     icon: Le,
     adapter: Pe
   }
-  // Uncomment and add when available
-  // {
-  //   id: "astrox",
-  //   name: "AstroX Wallet",
-  //   icon: astroxLogo,
-  //   adapter: AstroXAdapter,
-  // },
-  // {
-  //   id: "bitfinity",
-  //   name: "Bitfinity Wallet",
-  //   icon: bitfinityLogo,
-  //   adapter: BitfinityAdapter,
-  // },
 ];
 class gt {
   // Callbacks array

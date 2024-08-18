@@ -6,10 +6,7 @@ import { PlugAdapter } from "./PlugAdapter";
 
 // Import logos
 import dfinityLogo from "../assets/dfinity.svg";
-import nfidLogo from "../assets/nfid.svg";
 import plugLogo from "../assets/plug.jpg";
-// import astroxLogo from "../assets/astroxme.webp";
-// import bitfinityLogo from "../assets/bitfinity.svg";
 
 // Define the type for the adapter constructors
 interface WalletAdapterConstructor {
@@ -40,47 +37,22 @@ export const walletList: WalletInfo[] = [
     icon: dfinityLogo,
     adapter: NNSAdapter,
   },
-  // {
-  //   id: "nfid",
-  //   name: "NFID (Google Login)",
-  //   icon: nfidLogo,
-  //   adapter: NFIDAdapter,
-  // },
   {
     id: "plug",
     name: "Plug Wallet",
     icon: plugLogo,
     adapter: PlugAdapter,
   },
-  // Uncomment and add when available
-  // {
-  //   id: "astrox",
-  //   name: "AstroX Wallet",
-  //   icon: astroxLogo,
-  //   adapter: AstroXAdapter,
-  // },
-  // {
-  //   id: "bitfinity",
-  //   name: "Bitfinity Wallet",
-  //   icon: bitfinityLogo,
-  //   adapter: BitfinityAdapter,
-  // },
 ];
 
 // Create a typed adapters object for backward compatibility
 export const adapters: Record<string, WalletAdapterConstructor> = {
   nns: NNSAdapter,
-  plug: PlugAdapter,
-  // nfid: NFIDAdapter,
-  // astrox: AstroXAdapter,
-  // bitfinity: BitfinityAdapter,
+  plug: PlugAdapter
 };
 
 // Export individual wallet modules
 export {
   NNSAdapter as nnsAdapter,
-  PlugAdapter as plugAdapter,
-  // NFIDAdapter as nfidAdapter,
-  // AstroXAdapter as astroxAdapter,
-  // BitfinityAdapter as bitfinityAdapter,
+  PlugAdapter as plugAdapter
 };

@@ -5,17 +5,15 @@ Plug N Play simplifies the integration of Internet Computer wallets into your de
 ## Features
 
 - Seamless integration with multiple Internet Computer wallets
-- Simplified wallet connection, disconnection, and auto-reconnection
-- Built-in support for signatures and transaction status monitoring
-- Automatic data updates in response to wallet, block, and network changes
-- Svelte store-based state management for reactive updates
+- Simplified wallet connection, disconnection, and other functions
+- Built-in support for signatures
 - Batch transaction support for complex operations
 - Robust error handling and delegation refresh mechanisms
+- Lightweight
 
 ## Supported Wallets
 
 - Internet Identity
-- NFID
 - Plug
 - More to be added
 

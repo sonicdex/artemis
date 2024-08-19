@@ -17,7 +17,7 @@ export const nfid = {
                     onSuccess: async () => {
                         returnData = await continueLogin();
                         resolve(returnData);
-                    }
+                    },
                 });
             } else {
                 returnData = await continueLogin();
@@ -40,61 +40,6 @@ export const nfid = {
                 self.disConnectWallet = async function () { await self.authClient.logout() }
                 return { accountId: sid, principalId: principal.toString() }
             }
-
-            // var isConnected = await  self.authClient.isAuthenticated();
-
-            // var identity = await  self.authClient.getIdentity();
-            // var principal = await identity?.getPrincipal();
-
-            // console.log(identity ,principal )
-            // await new Promise((resolve, reject) => {
-
-            //     self.authClient.login({
-            //         identityProvider:'https://nfid.one/authenticate/?applicationName='+window.location.hostname,
-            //         windowOpenerFeatures: `left=${window.screen.width / 2 - 525 / 2}, top=${window.screen.height / 2 - 705 / 2}, toolbar=0,location=0,menubar=0,width=525,height=705`,
-            //         onSuccess: resolve,
-            //         onError: reject,
-            //     })
-            // })
-            // var identity =  self.authClient.getIdentity();
-            // var principal = identity.getPrincipal().toString();
-
-
-
-            // //             console.log(identity , identity);
-
-
-            // //             if (!isConnected) {
-            // //               await  authClient.login({
-            // //                     identityProvider: 'https://nfid.one/authenticate',
-            // //                     windowOpenerFeatures: 
-            // //   `left=${window.screen.width / 2 - 525 / 2}, `+ 
-            // //   `top=${window.screen.height / 2 - 705 / 2},` + 
-            // //   `toolbar=0,location=0,menubar=0,width=525,height=705`,
-            // //                     onSuccess: async (data) => {
-
-
-            // //                         var identity = authClient.getIdentity();
-            // //                         var authClient = await AuthClient.create({});
-            // //                         console.log(data);
-
-            // //                         // returnData = await continueLogin();
-            // //                         // resolve(returnData);
-            // //                     }
-            // //                 });
-            // //             }
-
-            // //             var identity = authClient.getIdentity();
-
-            // //             var isConnected = await authClient.isAuthenticated();
-
-            // //             console.log(identity , isConnected);
-            // // authClient.login({
-            // //     // TODO: local
-            // //     identityProvider: 'https://nfid.one' + `/authenticate/?applicationName=sonic`,
-            // //     onSuccess: resolve,
-            // //     onError: reject,
-            // //   })
         })
     }
 }

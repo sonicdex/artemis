@@ -1,6 +1,6 @@
 {
   "name": "artemis-web3-adapter",
-  "version": "1.1.9",
+  "version": "1.2.0",
   "description": "dfinity wallet adapter for connecting different wallets in IC",
   "main": "index.js",
   "scripts": {
@@ -11,11 +11,11 @@
   "dependencies": {
     "@astrox/sdk-web": "^0.1.41",
     "@astrox/sdk-webview": "^0.1.41",
-    "@dfinity/agent": "^1.2.0",
-    "@dfinity/auth-client": "^1.2.0",
-    "@dfinity/candid": "^1.2.0",
-    "@dfinity/identity": "^1.2.0",
-    "@dfinity/principal": "^1.2.0",
+    "@dfinity/agent": "^2.0.0",
+    "@dfinity/auth-client": "^2.0.0",
+    "@dfinity/candid": "^2.0.0",
+    "@dfinity/identity": "^2.0.0",
+    "@dfinity/principal": "^2.0.0",
     "@fort-major/msq-client": "^0.3.4",
     "@fort-major/msq-shared": "^0.3.3",
     "buffer": "^6.0.3",

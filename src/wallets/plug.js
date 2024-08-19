@@ -36,7 +36,10 @@ export const plug = {
             };
 
             return { accountId: sess.accountId, principalId: prinObj.toString() }
-        } catch (e) { return false; }
+        } catch (e) {
+            console.error(e);
+            throw e;
+        }
     },
     disConnectWallet: async function () {
         await window.ic.plug.disconnect();

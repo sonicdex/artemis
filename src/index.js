@@ -51,7 +51,7 @@ export const Artemis = class Artemis {
             }
             return this.principalId;
         } catch (error) {
-            return false;
+            throw error;
         }
     };
     async disconnect() {

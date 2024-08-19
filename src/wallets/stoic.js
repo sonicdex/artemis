@@ -13,14 +13,14 @@ export const stoic = {
         let getAcnts = await identity.accounts();
         getAcnts = JSON.parse(getAcnts);
 
-        this.agent = new HttpAgent({ identity, host: connectObj.host });
+        this.agent =  HttpAgent.createSync({ identity, host: connectObj.host });
 
         this.createActor = async function (connObj = { canisterId: '', interfaceFactory: false }) {
             if (!connObj.canisterId || !connObj.interfaceFactory) return false;
             return await Actor.createActor(connObj.interfaceFactory, { agent: this.agent, canisterId: connObj.canisterId });
         };
         this.createAgent = function () {
-            return new HttpAgent({ identity, host: connectObj.host });
+            return  HttpAgent.createSync({ identity, host: connectObj.host });
         };
         this.getPrincipal = function () { return identity.getPrincipal() }
         this.disConnectWallet = async function () {

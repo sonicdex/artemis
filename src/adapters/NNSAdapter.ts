@@ -1,11 +1,16 @@
-// src/adapters/NNSAdapter.js
-
-import { AdapterInterface } from "./AdapterInterface";
-import { Actor, HttpAgent } from "@dfinity/agent";
+import { AdapterInterface, Account, AdapterConfig, TransferParams } from "./AdapterInterface";
+import { Actor, HttpAgent, ActorSubclass } from "@dfinity/agent";
 import { getAccountIdentifier } from "../utils/identifierUtils";
 import { AuthClient } from "@dfinity/auth-client";
 
 export class NNSAdapter extends AdapterInterface {
+  name: string;
+  logo: string;
+  readyState: string;
+  url: string;
+  private authClient: AuthClient | null;
+  private agent: HttpAgent | null;
+
   constructor() {
     super();
     this.name = "NNS";
@@ -16,39 +21,46 @@ export class NNSAdapter extends AdapterInterface {
     this.agent = null;
   }
 
-  async isAvailable() {
+  async isAvailable(): Promise<boolean> {
     if (!this.authClient) {
       this.authClient = await AuthClient.create();
     }
     return true;
   }
 
-  async connect(config = { whitelist: [], host: "", identityProvider: "" }) {
+  async connect(config: AdapterConfig): Promise<Account> {
     if (!this.authClient) {
       this.authClient = await AuthClient.create();
     }
+
     const isConnected = await this.authClient.isAuthenticated();
     
     if (!isConnected) {
-      // Use a non-redirecting authentication method
-      const success = await this.authClient.login({
-        identityProvider: config.identityProvider || this.url,
-        onSuccess: () => {},
-        onError: () => {},
+      return new Promise<Account>((resolve, reject) => {
+        this.authClient!.login({
+          identityProvider: config.identityProvider || this.url,
+          onSuccess: async () => {
+            try {
+              const result = await this._continueLogin(config.host || this.url);
+              resolve(result);
+            } catch (error) {
+              reject(error);
+            }
+          },
+          onError: (error) => {
+            reject(new Error("Authentication failed: " + error));
+          },
+        });
       });
-  
-      if (!success) {
-        throw new Error("Authentication failed");
-      }
+    } else {
+      // User is already authenticated, proceed with login
+      return this._continueLogin(config.host || this.url);
     }
-  
-    // Continue with login process
-    return this._continueLogin(config.host || this.url);
   }
 
-  async _continueLogin(host) {
+  private async _continueLogin(host: string): Promise<Account> {
     try {
-      const identity = this.authClient.getIdentity();
+      const identity = this.authClient!.getIdentity();
       const principal = identity.getPrincipal();  
       this.agent = HttpAgent.createSync({
         identity,
@@ -68,10 +80,9 @@ export class NNSAdapter extends AdapterInterface {
       throw error;
     }
   }
-  
 
 
-  async disconnect() {
+  async disconnect(): Promise<void> {
     if (this.authClient) {
       await this.authClient.logout();
       this.readyState = "Loadable";
@@ -79,7 +90,7 @@ export class NNSAdapter extends AdapterInterface {
     }
   }
 
-  async createActor(canisterId, idl) {
+  async createActor<T>(canisterId: string, idl: any): Promise<ActorSubclass<T>> {
     if (!canisterId || !idl) {
       throw new Error("Canister ID and Interface Factory are required");
     }
@@ -91,20 +102,19 @@ export class NNSAdapter extends AdapterInterface {
     return Actor.createActor(idl, { agent: this.agent, canisterId });
   }
 
-  async createAgent(host) {
+  async createAgent(host: string): Promise<HttpAgent> {
     if (!this.authClient) {
       throw new Error("AuthClient is not initialized");
     }
     const identity = this.authClient.getIdentity();
     const agent = HttpAgent.createSync({ identity, host });
     if (this.url.includes("localhost") || this.url.includes("127.0.0.1")) {
-      await this.agent.fetchRootKey();
+      await agent.fetchRootKey();
     }
-
     return agent;
   }
 
-  async getAccountId() {
+  async getAccountId(): Promise<string|boolean> {
     if (!this.authClient || !this.agent) {
       throw new Error("Wallet is not connected or initialized");
     }
@@ -113,11 +123,32 @@ export class NNSAdapter extends AdapterInterface {
     return getAccountIdentifier(principal.toString());
   }
 
-  async getPrincipal() {
+  async getPrincipal(): Promise<string> {
     if (!this.authClient) {
       throw new Error("AuthClient is not initialized");
     }
     const identity = this.authClient.getIdentity();
     return identity.getPrincipal().toString();
+  }
+
+  // Implement these methods to satisfy the interface
+  async getBalance(): Promise<bigint> {
+    throw new Error("Method not implemented.");
+  }
+
+  async transfer(params: TransferParams): Promise<void> {
+    throw new Error("Method not implemented.");
+  }
+
+  async whoAmI(): Promise<string> {
+    if (!this.authClient || !this.agent) {
+      throw new Error("Wallet is not connected or initialized");
+    }
+    const identity = this.authClient.getIdentity();
+    return identity.getPrincipal().toString();
+  }
+
+  isConnected(): boolean {
+    return this.authClient !== null && this.agent !== null;
   }
 }

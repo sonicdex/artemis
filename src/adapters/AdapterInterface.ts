@@ -1,3 +1,5 @@
+import { Principal } from '@dfinity/principal';
+
 export interface AdapterConfig {
   whitelist?: string[];
   host?: string;
@@ -13,6 +15,11 @@ export interface TransferParams {
   fromSubaccount?: Uint8Array;
 }
 
+export type Account = {
+  accountId: string | boolean;
+  principalId: string;
+}
+
 export abstract class AdapterInterface {
   constructor() {
     if (new.target === AdapterInterface) {
@@ -20,9 +27,9 @@ export abstract class AdapterInterface {
     }
   }
 
-  abstract isAvailable(): Promise<void>;
+  abstract isAvailable(): Promise<boolean>;
 
-  abstract connect(config: AdapterConfig): Promise<void>;
+  abstract connect(config: AdapterConfig): Promise<Account>;
 
   abstract disconnect(): Promise<void>;
 
@@ -32,9 +39,9 @@ export abstract class AdapterInterface {
 
   abstract createActor<T>(canisterId: string, idl: any): Promise<T>;
 
-  abstract getAccountId(): Promise<string>;
+  abstract getAccountId(): Promise<string|boolean>;
 
-  abstract getPrincipal(): Promise<string>;
+  abstract getPrincipal(): Promise<string|boolean>;
 
   abstract isConnected(): boolean;
 

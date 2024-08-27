@@ -202,7 +202,7 @@ class PnP {
 
     if (isAnon) {
       if (isForced || !this.anonCanisterActors[canisterId]) {
-        const pubAgent = new HttpAgent({
+        const pubAgent = HttpAgent.createSync({
           identity: new AnonymousIdentity(),
           host: this.config.hostUrl,
         });

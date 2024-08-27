@@ -90,42 +90,12 @@ function createPnPStore() {
     return principalId;
   }
 
-  async function transfer(to: string, amount: bigint): Promise {
-    const store = get({ subscribe });
-    if (!store.pnp || !store.walletState.principalId) throw new Error('Wallet not connected');
-
-    try {
-      const ledgerActor = await store.pnp.getSignedActor('ryjl3-tyaaa-aaaaa-aaaba-cai', {} as any); // ICP Ledger canister
-      const result = await ledgerActor.icrc1_transfer({
-        to: { owner: Principal.fromText(to), subaccount: [] },
-        amount,
-        fee: [],
-        memo: [],
-        from_subaccount: [],
-        created_at_time: [],
-      });
-      
-      // Update balance after transfer
-      const newBalance = await getBalance(store.walletState.principalId);
-      update(s => ({
-        ...s,
-        walletState: { ...s.walletState, balance: newBalance },
-      }));
-
-      return `Transfer successful. Transaction ID: ${result.Ok}`;
-    } catch (error) {
-      console.error('Transfer failed:', error);
-      return 'Transfer failed: ' + (error as Error).message;
-    }
-  }
-
   // Other methods...
 
   return {
     subscribe,
     init,
     connect,
-    transfer,
     // Other exposed methods...
   };
 }
@@ -139,6 +109,8 @@ export const WalletService = createPnPStore();
 <script lang="ts">
   import { onMount } from "svelte";
   import { WalletService } from "./WalletService";
+  import {i} from "declarations/exe_token/exe_token.did.js";
+  import { canisterId, idlFactory } as exeJs from "declarations/exe_token/exe_token.did.js";
 
   let walletState;
   WalletService.subscribe(value => walletState = value.walletState);
@@ -157,6 +129,7 @@ export const WalletService = createPnPStore();
 
   async function handleTransfer(to: string, amount: string) {
     try {
+      const exeActor = $WalletSerive.getSignedActor(canisterId, idlFactory);
       const result = await WalletService.transfer(to, BigInt(amount));
       console.log(result);
     } catch (error) {
@@ -167,7 +140,7 @@ export const WalletService = createPnPStore();
 
 <main>
   {#if !walletState.activeWallet}
-    <button on:click={() => handleConnect('internet-identity')}>Connect Wallet</button>
+    <button on:click={() => handleConnect('plug')}>Connect Wallet</button>
   {:else}
     <p>Connected: {walletState.principalId}</p>
     <p>Balance: {walletState.balance.toString()}</p>
@@ -176,10 +149,9 @@ export const WalletService = createPnPStore();
 </main>
 ```
 
-
 ## Advanced Usage: Reconnection Mechanism
 
-The `WalletService` includes a reconnection mechanism that attempts to reconnect to the previously used wallet when the page is reloaded. This is handled automatically in the `init` function:
+The `WalletService` includes a reconnection mechanism that attempts to reconnect to the previously used wallet if it is stored in local storage. This is useful for maintaining a seamless user experience across sessions.
 
 ```typescript
 async function init() {
@@ -199,28 +171,6 @@ async function attemptReconnect() {
       console.error("Failed to reconnect to wallet:", error);
       localStorage.removeItem('lastConnectedWallet');
     }
-  }
-}
-```
-
-## Error Handling
-
-The `WalletService` includes built-in error handling. Here's an example of how errors are handled in the `getWhoAmIResponse` function:
-
-```typescript
-async function getWhoAmIResponse(): Promise<string> {
-  const store = get({ subscribe });
-  try {
-    if (!store.walletState.activeWallet) {
-      throw new Error("Wallet is not active");
-    }
-
-    const dogActor = await createSignedActor(Canisters.DOG);
-    const response = await dogActor.whoami();
-    return JSON.stringify(response);
-  } catch (error) {
-    console.error("Failed in getWhoAmIResponse:", error);
-    return "Error: " + (error as Error).message;
   }
 }
 ```

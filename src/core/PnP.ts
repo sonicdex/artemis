@@ -209,7 +209,7 @@ class PnP {
         if (this.config.hostUrl?.includes("localhost")) {
           await pubAgent.fetchRootKey();
         }
-        actor = await Actor.createActor<T>(idl, {
+        actor = Actor.createActor<T>(idl, {
           agent: pubAgent,
           canisterId: canisterId,
         });

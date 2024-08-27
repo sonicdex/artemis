@@ -27,32 +27,23 @@ export class NNSAdapter extends AdapterInterface {
     if (!this.authClient) {
       this.authClient = await AuthClient.create();
     }
-
     const isConnected = await this.authClient.isAuthenticated();
-
-    return new Promise(async (resolve, reject) => {
-      if (!isConnected) {
-        this.authClient.login({
-          identityProvider: config.identityProvider || this.url,
-          onSuccess: async () => {
-            try {
-              const returnData = await this._continueLogin(config.host || this.url);
-              resolve(returnData);
-            } catch (error) {
-              reject(error);
-            }
-          },
-          onError: reject,
-        });
-      } else {
-        try {
-          const returnData = await this._continueLogin(config.host || this.url);
-          resolve(returnData);
-        } catch (error) {
-          reject(error);
-        }
+    
+    if (!isConnected) {
+      // Use a non-redirecting authentication method
+      const success = await this.authClient.login({
+        identityProvider: config.identityProvider || this.url,
+        onSuccess: () => {},
+        onError: () => {},
+      });
+  
+      if (!success) {
+        throw new Error("Authentication failed");
       }
-    });
+    }
+  
+    // Continue with login process
+    return this._continueLogin(config.host || this.url);
   }
 
   async _continueLogin(host) {

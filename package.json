@@ -1,6 +1,6 @@
 {
   "name": "@windoge98/plug-n-play",
-  "version": "0.1.2",
+  "version": "0.0.3",
   "description": "Wallet wrapper/adapter for connecting different wallets on the Internet Computer",
   "main": "dist/plug-n-play.umd.js",
   "module": "dist/plug-n-play.es.js",
@@ -28,14 +28,14 @@
     "@dfinity/candid": "^2.0.0",
     "@dfinity/identity": "^2.0.0",
     "@dfinity/principal": "^2.0.0",
-    "@fort-major/msq-client": "^0.3.4",
+    "@fort-major/msq-client": "^0.3.13",
     "@fort-major/msq-shared": "^0.3.3",
     "buffer": "^6.0.3",
     "buffer-crc32": "^1.0.0",
     "crypto-js": "^4.2.0"
   },
   "devDependencies": {
-    "vite": "^5.4.0"
+    "vite": "^5.4.2"
   },
   "engines": {
     "pnpm": ">=9.0.0",

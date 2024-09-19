@@ -40,9 +40,6 @@ export const BatchTransaction = class BatchTransaction {
                     const onSucessCall = el.onSuccess;
                     const onFailCall = el.onError;
                     const ErrorStat = data.err ? data.err : data.Err ? data.Err : data.ERR;
-
-
-
                     if (ErrorStat && (JSON.stringify(ErrorStat) != el?.skipCondition)) {
                         self.failedSteps.push(self.stepsList[stepIndex]);
                         self.transactionResults[self.stepsList[stepIndex]] = ErrorStat;
@@ -136,7 +133,8 @@ export const BatchTransaction = class BatchTransaction {
                                     await trxItem.onFailMain(resp, trxItem);
                                 }
                             } catch (error) {
-                                await trxItem.onFailMain(false, trxItem);
+                                this._info = error;
+                                await trxItem.onFailMain(error, trxItem);
                             }
                         }
                     }

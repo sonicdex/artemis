@@ -134,7 +134,7 @@ export const BatchTransaction = class BatchTransaction {
                                 }
                             } catch (error) {
                                 this._info = error;
-                                await trxItem.onFailMain(error, trxItem);
+                                await trxItem.onFailMain(false, trxItem);
                             }
                         }
                     }

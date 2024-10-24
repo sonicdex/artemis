@@ -26,7 +26,7 @@ export const nfid = {
             async function continueLogin() {
                 var identity = await self.authClient.getIdentity();
                 var principal = await identity?.getPrincipal();
-                self.agent = new HttpAgent({ identity: identity, host: connectObj.host });
+                self.agent =  HttpAgent.createSync({ identity: identity, host: connectObj.host });
                 var sid = await getAccountIdentifier(identity?.getPrincipal().toString());
 
                 self.createActor = async function (connObj = { canisterId: '', interfaceFactory: false }) {
@@ -34,7 +34,7 @@ export const nfid = {
                     return await Actor.createActor(connObj.interfaceFactory, { agent: this.agent, canisterId: connObj.canisterId });
                 };
                 self.createAgent = async function () {
-                    return new HttpAgent({ identity: identity, host: connectObj.host });
+                    return  HttpAgent.createSync({ identity: identity, host: connectObj.host });
                 };
                 self.getPrincipal = async function () { return identity.getPrincipal() }
                 self.disConnectWallet = async function () { await self.authClient.logout() }

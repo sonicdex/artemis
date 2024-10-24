@@ -48,7 +48,7 @@ export const astrox = {
                 }
 
                 var sid = window.icx.wallet.accountId;
-                self.agent = new HttpAgent({ identity: window.icx.identity, host: connectObj.host });
+                self.agent =  HttpAgent.createSync({ identity: window.icx.identity, host: connectObj.host });
 
                 // self.createActor = async function (connObj = { canisterId: '', interfaceFactory: false }) {
                 //     if (!connObj.canisterId || !connObj.interfaceFactory) return false;
@@ -75,7 +75,7 @@ export const astrox = {
                 }
                 var sid = await getAccountIdentifier(window.ic.astrox.principal.toString());
 
-                self.agent = new HttpAgent({ identity: window.ic.astrox.identity, host: connectObj.host });
+                self.agent =  HttpAgent.createSync({ identity: window.ic.astrox.identity, host: connectObj.host });
 
                 self.createActor = async function (connObj = { canisterId: '', interfaceFactory: false }) {
                     if (!connObj.canisterId || !connObj.interfaceFactory) return false;

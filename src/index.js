@@ -88,26 +88,26 @@ export const Artemis = class Artemis {
         let actor = false;
         if (isAnon) {
             if (isForced) {
-                const pubAgent = new HttpAgent({ AnonymousIdentity, host: this._connectObject.host });
+                const pubAgent = HttpAgent.createSync({ AnonymousIdentity, host: this._connectObject.host });
                 actor = await Actor.createActor(idl, { agent: pubAgent, canisterId: canisterId })
-                this.anoncanisterActors[canisterId] = actor;
+                if(actor) this.anoncanisterActors[canisterId] = actor;
             } else if (this.anoncanisterActors[canisterId])
                 actor = this.anoncanisterActors[canisterId]
             else {
-                const pubAgent = new HttpAgent({ AnonymousIdentity, host: this._connectObject.host });
+                const pubAgent = HttpAgent.createSync({ AnonymousIdentity, host: this._connectObject.host });
                 actor = await Actor.createActor(idl, { agent: pubAgent, canisterId: canisterId })
-                this.anoncanisterActors[canisterId] = actor;
+                if(actor)this.anoncanisterActors[canisterId] = actor;
             }
         } else {
             if (isForced) {
                 actor = await this.provider.createActor({ canisterId: canisterId, interfaceFactory: idl });
-                this.canisterActors[canisterId] = actor;
+                if(actor) this.canisterActors[canisterId] = actor;
             }
             else if (this.canisterActors[canisterId]) {
                 actor = this.canisterActors[canisterId];
             } else {
                 actor = await this.provider.createActor({ canisterId: canisterId, interfaceFactory: idl });
-                this.canisterActors[canisterId] = actor;
+                if(actor)this.canisterActors[canisterId] = actor;
             }
         }
         return actor;

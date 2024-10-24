@@ -40,7 +40,7 @@ export const BatchTransaction = class BatchTransaction {
                     const onSucessCall = el.onSuccess;
                     const onFailCall = el.onError;
                     const ErrorStat = data.err ? data.err : data.Err ? data.Err : data.ERR;
-                    if (ErrorStat && (JSON.stringify(ErrorStat) != el?.skipCondition)) {
+                    if (ErrorStat && !el?.skipCondition.includes((JSON.stringify(ErrorStat)))) {
                         self.failedSteps.push(self.stepsList[stepIndex]);
                         self.transactionResults[self.stepsList[stepIndex]] = ErrorStat;
                         self.state = 'error';
@@ -67,6 +67,7 @@ export const BatchTransaction = class BatchTransaction {
                     self.activeStep = self.stepsList[stepIndex];
                     self.state = 'error';
                     _this.state = 'error';
+                    self._info = err;
                     if (onFailCall) await onFailCall(err)
                     return false;
                 }

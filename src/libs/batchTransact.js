@@ -1,3 +1,5 @@
+import serializedObj from './utils';
+
 export const BatchTransaction = class BatchTransaction {
     state = 'idle'; //   'idle' ,'running', 'error' ,'done' 
     transactionLlist = {};
@@ -42,7 +44,7 @@ export const BatchTransaction = class BatchTransaction {
                     const ErrorStat = data.err ? data.err : data.Err ? data.Err : data.ERR;
 
                     const skipConditon = el?.skipCondition? el?.skipCondition:'';  
-                    if (ErrorStat && !skipConditon.includes((JSON.stringify(ErrorStat)))) {
+                    if (ErrorStat && !skipConditon.includes((serializedObj(ErrorStat)))) {
                         self.failedSteps.push(self.stepsList[stepIndex]);
                         self.transactionResults[self.stepsList[stepIndex]] = ErrorStat;
                         self.state = 'error';

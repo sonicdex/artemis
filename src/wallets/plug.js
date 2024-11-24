@@ -22,7 +22,8 @@ export const plug = {
                 publicKey = await window.ic.plug.requestConnect(connectObj)
             }
             prinObj = await window.ic.plug.agent.getPrincipal();
-            var sess = await window.ic.plug.sessionManager.getSession();
+            //var sess = await window.ic.plug.sessionManager.getSession();
+
             this.agent = window.ic.plug.agent;
             this.getPrincipal = async function () { return window.ic.plug.getPrincipal() }
             this.createActor = async function (t1, t2) { return window.ic.plug.createActor(t1, t2) };
@@ -35,7 +36,7 @@ export const plug = {
                 return window.ic.plug.batchTransactions(t1)
             };
 
-            return { accountId: sess.accountId, principalId: prinObj.toString() }
+            return { accountId: window.ic.plug.accountId, principalId: prinObj.toString() }
         } catch (e) {
             console.error(e);
             throw e;

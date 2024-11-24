@@ -1,4 +1,4 @@
-import serializedObj from './utils';
+import {serializedObj} from './utils';
 
 export const BatchTransaction = class BatchTransaction {
     state = 'idle'; //   'idle' ,'running', 'error' ,'done' 
@@ -59,7 +59,7 @@ export const BatchTransaction = class BatchTransaction {
                         _this.state = 'done';
                     }
                     if (_this.updateNextStep && self.trxArray[(i + 1)]) {
-                        await _this.updateNextStep(data, self.trxArray[(i + 1)]);
+                        await _this.updateNextStep(data, self.trxArray[(i + 1)], self);
                     }
                     if (onSucessCall) await onSucessCall(ErrorStat ? ErrorStat : data);
                 };

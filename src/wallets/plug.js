@@ -7,14 +7,14 @@ window.onload = function() {
 export const plug = {
     readyState: "NotDetected",
     url: 'https://plugwallet.ooo/',
-    connectWallet: async function (connectObj = { whitelist: [], host: '', }) {
+    connectWallet: async function (connectObj = { whitelist: [], host: '',}) {
         if(!window.ic.plug ){ this.readyState = 'NotDetected'; window.open("https://plugwallet.ooo/" );} 
 
         var publicKey = false, prinObj = false;
         var isConnected = false;
         const timeoutPromise = new Promise((resolve) => { setTimeout(() => { resolve(false); }, 3000) });
         isConnected = await window.ic.plug.isConnected(); //Promise.race([window.ic.plug.isConnected(), timeoutPromise]);
-
+        connectObj.timeout = 50*1000;
         try {
             if (isConnected) {
                 await window.ic.plug.createAgent(connectObj)

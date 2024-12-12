@@ -7,3 +7,4 @@ export * from './dfinity';
 export * from './astroxme';
 export * from './nfid';
 export * from './msq';
+// export * from './oisy';

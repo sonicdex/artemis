@@ -15,6 +15,7 @@
     "@dfinity/auth-client": "^2.0.0",
     "@dfinity/candid": "^2.0.0",
     "@dfinity/identity": "^2.0.0",
+    "@dfinity/oisy-wallet-signer": "^0.0.3",
     "@dfinity/principal": "^2.0.0",
     "@fort-major/msq-client": "^0.3.4",
     "@fort-major/msq-shared": "^0.3.3",

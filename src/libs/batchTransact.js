@@ -1,3 +1,5 @@
+import {serializedObj} from './utils';
+
 export const BatchTransaction = class BatchTransaction {
     state = 'idle'; //   'idle' ,'running', 'error' ,'done' 
     transactionLlist = {};
@@ -40,11 +42,14 @@ export const BatchTransaction = class BatchTransaction {
                     const onSucessCall = el.onSuccess;
                     const onFailCall = el.onError;
                     const ErrorStat = data.err ? data.err : data.Err ? data.Err : data.ERR;
-                    if (ErrorStat && !el?.skipCondition.includes((JSON.stringify(ErrorStat)))) {
+
+                    const skipConditon = el?.skipCondition? el?.skipCondition:'';  
+                    if (ErrorStat && !skipConditon.includes((serializedObj(ErrorStat)))) {
                         self.failedSteps.push(self.stepsList[stepIndex]);
                         self.transactionResults[self.stepsList[stepIndex]] = ErrorStat;
                         self.state = 'error';
                         _this.state = 'error';
+                        self._info = ErrorStat;
                         if (onFailCall) await onFailCall(ErrorStat)
                         return false;
                     } else {
@@ -54,10 +59,11 @@ export const BatchTransaction = class BatchTransaction {
                         _this.state = 'done';
                     }
                     if (_this.updateNextStep && self.trxArray[(i + 1)]) {
-                        await _this.updateNextStep(data, self.trxArray[(i + 1)]);
+                        await _this.updateNextStep(data, self.trxArray[(i + 1)], self);
                     }
-                    if (onSucessCall) await onSucessCall(ErrorStat ? ErrorStat : data)
+                    if (onSucessCall) await onSucessCall(ErrorStat ? ErrorStat : data);
                 };
+
                 self.trxArray[i][j].onFailMain = async (err, _this) => {
                     const onFailCall = el.onFailCall;
                     const stepIndex = _this.stepIndex;
@@ -135,7 +141,7 @@ export const BatchTransaction = class BatchTransaction {
                                 }
                             } catch (error) {
                                 this._info = error;
-                                await trxItem.onFailMain(false, trxItem);
+                                await trxItem.onFailMain(error, trxItem);
                             }
                         }
                     }

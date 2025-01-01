@@ -13,6 +13,7 @@ export const dfinity = {
             if (!isConnected) {
                 self.authClient.login({
                     identityProvider: 'https://identity.ic0.app',
+                    maxTimeToLive: BigInt(7 * 24 * 60 * 60 * 1000 * 1000 * 1000),
                     onSuccess: async () => {
                         returnData = await continueLogin();
                         resolve(returnData);

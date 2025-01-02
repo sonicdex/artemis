@@ -1,4 +1,4 @@
-import {serializedObj} from './utils';
+import { serializedObj } from './utils';
 
 export const BatchTransaction = class BatchTransaction {
     state = 'idle'; //   'idle' ,'running', 'error' ,'done' 
@@ -43,7 +43,7 @@ export const BatchTransaction = class BatchTransaction {
                     const onFailCall = el.onError;
                     const ErrorStat = data.err ? data.err : data.Err ? data.Err : data.ERR;
 
-                    const skipConditon = el?.skipCondition? el?.skipCondition:'';  
+                    const skipConditon = el?.skipCondition ? el?.skipCondition : '';
                     if (ErrorStat && !skipConditon.includes((serializedObj(ErrorStat)))) {
                         self.failedSteps.push(self.stepsList[stepIndex]);
                         self.transactionResults[self.stepsList[stepIndex]] = ErrorStat;
@@ -67,7 +67,7 @@ export const BatchTransaction = class BatchTransaction {
                 self.trxArray[i][j].onFailMain = async (err, _this) => {
                     const onFailCall = el.onFailCall;
                     const stepIndex = _this.stepIndex;
-                    console.error(`error in  ${self.stepsList[stepIndex]} `, self.trxArray[i][j])
+                    //  console.error(`error in  ${self.stepsList[stepIndex]} `, self.trxArray[i][j])
                     console.error(err);
                     self.failedSteps.push(self.stepsList[stepIndex]);
                     self.activeStep = self.stepsList[stepIndex];
@@ -104,7 +104,7 @@ export const BatchTransaction = class BatchTransaction {
         if (!this.trxArray.length) return false;
         var self = this;
         self.activeStep = self.completed.length > 0 ? self.stepsList[self.completed.length] : self.stepsList[0];
-        if (['bitfinity'].includes(this._adapterObj.walletActive)) {
+        if (['bitfinity1'].includes(this._adapterObj.walletActive)) {
             for (const trxStepItem of self.trxArray) {
                 if (self.state == 'error' || self.state == 'done') break;
                 if (trxStepItem.length)
@@ -117,7 +117,7 @@ export const BatchTransaction = class BatchTransaction {
                 self.state = 'error';
                 return false;
             }
-        } else if (['plug', 'stoic', 'dfinity', 'astrox', 'metamask', 'nfid'].includes(this._adapterObj.walletActive)) {
+        } else if (['bitfinity','plug', 'stoic', 'dfinity', 'astrox', 'metamask', 'nfid'].includes(this._adapterObj.walletActive)) {
             try {
                 for (const trxStepItem of self.trxArray) {
                     if (self.state == 'error' || self.state == 'done') break;

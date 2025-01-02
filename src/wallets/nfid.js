@@ -7,12 +7,18 @@ export const nfid = {
     authClient: false,
     connectWallet: async function (connectObj = { whitelist: [], host: '' }) {
         var self = this, returnData = {};
-        self.authClient = await AuthClient.create();
+        self.authClient = await AuthClient.create({
+            idleOptions: {
+                idleTimeout: 1000 * 60 * 60 * 12,
+                disableDefaultIdleCallback: true,
+            }
+        });
         return new Promise(async (resolve, reject) => {
             var isConnected = await self.authClient.isAuthenticated();
             if (!isConnected) {
                 self.authClient.login({
                     identityProvider: 'https://nfid.one/authenticate/?applicationName=' + window.location.hostname,
+                    maxTimeToLive: BigInt(((60 * 60 * 1000 * 24 * 7) * 1000 * 1000)),
                     windowOpenerFeatures: `left=${window.screen.width / 2 - 525 / 2}, top=${window.screen.height / 2 - 705 / 2}, toolbar=0,location=0,menubar=0,width=525,height=705`,
                     onSuccess: async () => {
                         returnData = await continueLogin();

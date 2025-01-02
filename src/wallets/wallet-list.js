@@ -17,5 +17,5 @@ export const walletList = [
     { id: 'stoic', name: 'Stoic Wallet', icon: BaseUrl + 'assets/stoic.png', adapter: stoic },
     { id: 'nfid', name: 'NFID', icon: BaseUrl + 'assets/nfid.svg', adapter: nfid },
     { id: 'metamask', name: 'MetaMask', icon: BaseUrl + 'assets/metamask.svg', adapter: metaMask },
-    // { id: 'oisyWallet' , name : 'OISY Wallet' ,  icon: BaseUrl + 'assets/oisy.svg', adapter: oisyWallet}
+    //{ id: 'oisyWallet' , name : 'OISY Wallet' ,  icon: BaseUrl + 'assets/oisy.svg', adapter: oisyWallet}
 ];

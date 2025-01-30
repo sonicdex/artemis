@@ -1,5 +1,5 @@
 import { Actor, HttpAgent } from '@dfinity/agent';
-import { getAccountIdentifier } from '../libs/identifier-utils';
+import { createAuthClient, getAccountIdentifier } from '../libs/identifier-utils';
 import { AuthClient } from "@dfinity/auth-client";
 
 export const dfinity = {
@@ -7,17 +7,13 @@ export const dfinity = {
     authClient: false,
     connectWallet: async function (connectObj = { whitelist: [], host: '' }) {
         var self = this, returnData = {};
-        self.authClient = await AuthClient.create({
-            idleOptions: {
-                idleTimeout: 1000 * 60 * 60 * 12,
-                disableDefaultIdleCallback: true,
-            }
-        });
+        self.authClient = await createAuthClient()
         return new Promise(async (resolve, reject) => {
             var isConnected = await self.authClient.isAuthenticated();
             if (!isConnected) {
                 self.authClient.login({
-                    identityProvider: 'https://identity.ic0.app',
+                    identityProvider: 'https://identity.ic0.app',host: connectObj.host,
+                    windowOpenerFeatures: `left=${window.screen.width / 2 - 525 / 2}, top=${window.screen.height / 2 - 705 / 2}, toolbar=0,location=0,menubar=0,width=525,height=705`,
                     maxTimeToLive: BigInt(7 * 24 * 60 * 60 * 1000 * 1000 * 1000),
                     onSuccess: async () => {
                         returnData = await continueLogin();

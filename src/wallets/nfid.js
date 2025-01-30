@@ -1,18 +1,14 @@
 import { Actor, HttpAgent } from '@dfinity/agent';
-import { getAccountIdentifier } from '../libs/identifier-utils';
-import { AuthClient } from "@dfinity/auth-client";
+import { createAuthClient, getAccountIdentifier } from '../libs/identifier-utils';
+
 
 export const nfid = {
     readyState: "Loadable", url: "https://nfid.one/",
     authClient: false,
     connectWallet: async function (connectObj = { whitelist: [], host: '' }) {
         var self = this, returnData = {};
-        self.authClient = await AuthClient.create({
-            idleOptions: {
-                idleTimeout: 1000 * 60 * 60 * 12,
-                disableDefaultIdleCallback: true,
-            }
-        });
+        self.authClient = await createAuthClient();
+
         return new Promise(async (resolve, reject) => {
             var isConnected = await self.authClient.isAuthenticated();
             if (!isConnected) {

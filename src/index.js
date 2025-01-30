@@ -1,6 +1,7 @@
 import { Actor, HttpAgent, AnonymousIdentity } from '@dfinity/agent';
 import { NNS_IDL } from './did/nns.idl';
-import { walletList } from "./wallets";
+import { walletList, web3Wallets } from "./wallets";
+
 import { BatchTransaction } from './libs/batchTransact'
 
 import { getAccountIdentifier } from './libs/identifier-utils';
@@ -32,12 +33,13 @@ export const Artemis = class Artemis {
     async connect(wallet, connectObj = { whitelist: [], host: HOSTURL }) {
         connectObj = this._cleanUpConnObj(connectObj);
         if (!wallet) return false;
-        try {
+        return new Promise(async (resolve, reject) => {
             var selectedWallet = this.wallets.find(o => o.id == wallet);
-            if (!selectedWallet) return false;
             if (selectedWallet.adapter.readyState == "Installed" || selectedWallet.adapter.readyState == "Loadable") {
-                var p = await selectedWallet.adapter.connectWallet(connectObj);
-                if (!p) return false;
+                var p = await selectedWallet.adapter.connectWallet(connectObj).catch((e) => {
+                    reject(e);
+                });
+                if (!p) resolve(false);
                 this.principalId = p.principalId; this.accountId = p.accountId; this.walletActive = wallet;
                 this.provider = selectedWallet.adapter;
                 this.connectedWalletInfo = { id: selectedWallet.id, icon: selectedWallet.icon, name: selectedWallet.name };
@@ -49,10 +51,8 @@ export const Artemis = class Artemis {
             } else if (selectedWallet.adapter.readyState == 'NotDetected') {
                 window.open(selectedWallet.adapter.url, '_blank');
             }
-            return this.principalId;
-        } catch (error) {
-            throw error;
-        }
+            resolve(this.principalId);
+        });
     };
     async disconnect() {
         var res = this.provider.disConnectWallet();
@@ -90,24 +90,24 @@ export const Artemis = class Artemis {
             if (isForced) {
                 const pubAgent = HttpAgent.createSync({ AnonymousIdentity, host: this._connectObject.host });
                 actor = await Actor.createActor(idl, { agent: pubAgent, canisterId: canisterId })
-                if(actor) this.anoncanisterActors[canisterId] = actor;
+                if (actor) this.anoncanisterActors[canisterId] = actor;
             } else if (this.anoncanisterActors[canisterId])
                 actor = this.anoncanisterActors[canisterId]
             else {
                 const pubAgent = HttpAgent.createSync({ AnonymousIdentity, host: this._connectObject.host });
                 actor = await Actor.createActor(idl, { agent: pubAgent, canisterId: canisterId })
-                if(actor)this.anoncanisterActors[canisterId] = actor;
+                if (actor) this.anoncanisterActors[canisterId] = actor;
             }
         } else {
             if (isForced) {
                 actor = await this.provider.createActor({ canisterId: canisterId, interfaceFactory: idl });
-                if(actor) this.canisterActors[canisterId] = actor;
+                if (actor) this.canisterActors[canisterId] = actor;
             }
             else if (this.canisterActors[canisterId]) {
                 actor = this.canisterActors[canisterId];
             } else {
                 actor = await this.provider.createActor({ canisterId: canisterId, interfaceFactory: idl });
-                if(actor)this.canisterActors[canisterId] = actor;
+                if (actor) this.canisterActors[canisterId] = actor;
             }
         }
         return actor;
@@ -141,4 +141,16 @@ if (window) {
     window.artemis = Artemis;
     window.artemis.BatchTransact = BatchTransaction;
     window.artemis.dfinity = { AnonymousIdentity, Principal }
+    window.onload = function () {
+        if (window.ic && window.ic.plug) { window.ic.plug.init(); }
+        if (window.ic.bitfinityWallet) web3Wallets.bitfinity.readyState = 'Installed';
+        if (window.ic.plug) web3Wallets.plug.readyState = 'Installed';
+        var tries = 0;
+        const s = setInterval(() => {
+            if (window.ic.plug) { web3Wallets.plug.readyState = 'Installed'; }
+            if (window.ic.bitfinityWallet) { web3Wallets.bitfinity.readyState = 'Installed' };
+            tries++;
+            if (tries > 10) { clearInterval(s); }
+        }, 1000);
+    }
 }

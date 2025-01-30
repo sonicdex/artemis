@@ -8,7 +8,7 @@ import { metaMask } from './msq';
 // import { oisyWallet} from './oisy'
 
 const BaseUrl = "https://raw.githubusercontent.com/sonicdex/artemis/main/";
-
+export const web3Wallets ={ bitfinity, plug , astrox}
 export const walletList = [
     { id: 'dfinity', name: "Internet Identity", icon: BaseUrl + 'assets/dfinity.svg', adapter: dfinity },
     { id: 'plug', name: 'Plug Wallet', icon: BaseUrl + 'assets/plug.jpg', adapter: plug },
@@ -17,5 +17,5 @@ export const walletList = [
     { id: 'stoic', name: 'Stoic Wallet', icon: BaseUrl + 'assets/stoic.png', adapter: stoic },
     { id: 'nfid', name: 'NFID', icon: BaseUrl + 'assets/nfid.svg', adapter: nfid },
     { id: 'metamask', name: 'MetaMask', icon: BaseUrl + 'assets/metamask.svg', adapter: metaMask },
-    //{ id: 'oisyWallet' , name : 'OISY Wallet' ,  icon: BaseUrl + 'assets/oisy.svg', adapter: oisyWallet}
+    // { id: 'oisyWallet' , name : 'OISY Wallet' ,  icon: BaseUrl + 'assets/oisy.svg', adapter: oisyWallet}
 ];

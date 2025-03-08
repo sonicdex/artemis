@@ -35,6 +35,8 @@ export const Artemis = class Artemis {
         if (!wallet) return false;
         return new Promise(async (resolve, reject) => {
             var selectedWallet = this.wallets.find(o => o.id == wallet);
+            if (selectedWallet?.adapter?.init) selectedWallet.adapter.init()
+
             if (selectedWallet.adapter.readyState == "Installed" || selectedWallet.adapter.readyState == "Loadable") {
                 var p = await selectedWallet.adapter.connectWallet(connectObj).catch((e) => {
                     reject(e);
@@ -137,7 +139,7 @@ export const principalIdFromHex = getAccountIdentifier;
 
 export const ArtemisAdapter = new Artemis({ whitelist: [NNS_CANISTER_ID], host: HOSTURL });
 
-if (window) {
+export const initAdapter = async function () {
     window.artemis = Artemis;
     window.artemis.BatchTransact = BatchTransaction;
     window.artemis.dfinity = { AnonymousIdentity, Principal }
@@ -153,4 +155,8 @@ if (window) {
             if (tries > 10) { clearInterval(s); }
         }, 1000);
     }
+}
+
+if (window) {
+    initAdapter();
 }

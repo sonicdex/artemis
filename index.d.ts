@@ -12,7 +12,7 @@ type BatchTransactType = {
   [key: string]: TransactionItem[];
 };
 
-type ConnectObjType = {host: string; whitelist: string[]};
+type ConnectObjType = {host: string; whitelist: string[], onConnectionUpdate?:Function};
 
 const Artemis = class Artemis {
   constructor(connectObj?: ConnectObjType);
@@ -24,8 +24,8 @@ const Artemis = class Artemis {
   wallets: [];
   canisterActors: {};
   connectedWalletInfo: {id: string; icon: string; name: string};
-  connect(wallet: string, connectObj?: ConnectObjType): Promise<string>;
-  autoConnect(connectObj?: ConnectObjType): Promise<string>;
+  connect(wallet: string, connectObj?: ConnectObjType): Promise<{accountId:string, principalId:string}>;
+  autoConnect(connectObj?: ConnectObjType): Promise<{accountId:string, principalId:string}>;
   disconnect(): Promise<any>;
   isLoaded(): Promise<any>;
   getWalletBalance(returnType: string): Promise<number>;

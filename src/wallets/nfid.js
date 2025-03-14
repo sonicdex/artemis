@@ -1,97 +1,66 @@
 import { Actor, HttpAgent } from '@dfinity/agent';
-import { createAuthClient, getAccountIdentifier } from '../libs/identifier-utils';
-
-import { Ed25519KeyIdentity } from "@dfinity/identity";
-// import { HttpAgent} from "@dfinity/agent";
-
-import { PostMessageTransport } from "@slide-computer/signer-web";
-import { SignerAgent } from "@slide-computer/signer-agent";
-import { createAccountsPermissionScope, Signer } from "@slide-computer/signer";
+import { getAccountIdentifier } from '../libs/identifier-utils';
+import { AuthClient } from "@dfinity/auth-client";
+import { PostMessageTransport } from '@slide-computer/signer-web';
+import { Signer } from '@slide-computer/signer';
+import { SignerAgent } from '@slide-computer/signer-agent';
+import { LocalDStorage } from '../libs/utils';
 import { Principal } from '@dfinity/principal';
 
-import { SignerClient } from "@slide-computer/signer-client";
-import { ICRC1_IDL } from '../did'
+const NFIDConfig = {
+    url: "https://nfid.one/rpc"
+}
 
 export const nfid = {
-    readyState: "Loadable", url: "https://nfid.one/rpc",
+    readyState: "Loadable", url: NFIDConfig.url,
     authClient: false,
-    connectWallet: async function (connectObj = { whitelist: [], host: '' }) {
+    connectWallet: async function (params) {
         var self = this, returnData = {};
-       const transport =  new PostMessageTransport({
+        self.storageKey = 'nfid_del_key';
+        var storage = new LocalDStorage();
+        var t = await storage.get(self.storageKey);
+        const transport = new PostMessageTransport({
             url: this.url,
-            windowOpenerFeatures: "width=525,height=705",
-            establishTimeout: 45000,
-            disconnectTimeout: 35000,
-            manageFocus: false,
+            windowOpenerFeatures: `left=${window.screen.width / 2 - 525 / 2}, top=${window.screen.height / 2 - 705 / 2}, toolbar=0,location=0,menubar=0,width=525,height=705`,
+            maxTimeToLive: BigInt(7 * 24 * 60 * 60 * 1000 * 1000 * 1000),
+            establishTimeout: 45000, disconnectTimeout: 35000, manageFocus: false,
+           // detectNonClickEstablishment:false
         });
-        const signer = new Signer({transport});
-        const userPrincipal = (await signer.accounts())[0].owner;
-        const signerAgent = SignerAgent.createSync({
-            signer: signer,
-            account: userPrincipal
-        });
-        console.log(signer,signerAgent,userPrincipal)
+        const signer = new Signer({ transport });
+        const accounts = await signer.accounts();
 
-        const actor = Actor.createActor(ICRC1_IDL, {
-            agent: this.signerAgent,
-            canisterId:"ryjl3-tyaaa-aaaaa-aaaba-cai",
-          });
-
-          console.log(actor);
-       // const permissions = await signer.requestPermissions([createAccountsPermissionScope()]);
-        //await transport.connection.connect();
-
-
-        //console.log(signerClient);
-        // self.agent = HttpAgent.createSync({ host: this.url });
-        // // self.authClient = await createAuthClient();
-        // var sessionKey = Ed25519KeyIdentity.generate();
-        // var da = [];
-        // const maxTTL = BigInt(24 * 60 * 60) * BigInt(10 ** 9);
-        // const delegationChain = await self.signer.delegation({
-        //   publicKey: sessionKey.getPublicKey().toDer(),
-        //   targets: da,
-        //   maxTimeToLive: maxTTL,
-        // });
-
-       // console.log(delegationChain , self.signer);
+        
+        console.log(transport.connection);
+        if (transport.connection && !transport.connection.connected) {
+            
+            await transport.connection.connect();
+        }
+       
 
         return false;
-        return new Promise(async (resolve, reject) => {
+
+       
+        if(accounts[0].owner){
+            storage.set(self.storageKey , { userId: accounts[0].owner} )
+        }
+        self.agent = SignerAgent.createSync({ signer: signer, account: accounts[0].owner });
+
+        self.createActor = async function (connObj = { canisterId: '', interfaceFactory: false }) {
+            if (!connObj.canisterId || !connObj.interfaceFactory) return false;
+            return await Actor.createActor(connObj.interfaceFactory, { agent: self.agent, canisterId: connObj.canisterId });
+        };
+        const userPrincipal = await self.agent?.getPrincipal();
+
+        console.log(userPrincipal);
 
 
-            // var isConnected = await self.authClient.isAuthenticated();
-            // if (!isConnected) {
-            //     self.authClient.login({
-            //         identityProvider: 'https://nfid.one/authenticate/?applicationName=' + window.location.hostname,
-            //         maxTimeToLive: BigInt(((60 * 60 * 1000 * 24 * 7) * 1000 * 1000)),
-            //         windowOpenerFeatures: `left=${window.screen.width / 2 - 525 / 2}, top=${window.screen.height / 2 - 705 / 2}, toolbar=0,location=0,menubar=0,width=525,height=705`,
-            //         onSuccess: async () => {
-            //             returnData = await continueLogin();
-            //             resolve(returnData);
-            //         },
-            //     });
-            // } else {
-            //     returnData = await continueLogin();
-            //     resolve(returnData);
-            // }
-            // async function continueLogin() {
-            //     var identity = await self.authClient.getIdentity();
-            //     var principal = await identity?.getPrincipal();
-            //     self.agent =  HttpAgent.createSync({ identity: identity, host: connectObj.host });
-            //     var sid = await getAccountIdentifier(identity?.getPrincipal().toString());
-
-            //     self.createActor = async function (connObj = { canisterId: '', interfaceFactory: false }) {
-            //         if (!connObj.canisterId || !connObj.interfaceFactory) return false;
-            //         return await Actor.createActor(connObj.interfaceFactory, { agent: this.agent, canisterId: connObj.canisterId });
-            //     };
-            //     self.createAgent = async function () {
-            //         return  HttpAgent.createSync({ identity: identity, host: connectObj.host });
-            //     };
-            //     self.getPrincipal = async function () { return identity.getPrincipal() }
-            //     self.disConnectWallet = async function () { await self.authClient.logout() }
-            //     return { accountId: sid, principalId: principal.toString() }
-            //}
-        })
+        var sid = getAccountIdentifier(userPrincipal.toString());
+        self.getPrincipal = async function () { return await self.agent?.getPrincipal() }
+        self.disConnectWallet = async function () {
+            self.createActor = null;
+            self.agent = null;
+            self.getPrincipal = null;
+        }
+        return { accountId: sid, principalId: userPrincipal.toString() }
     }
 }

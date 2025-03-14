@@ -39,9 +39,10 @@ export const Artemis = class Artemis {
 
             if (selectedWallet.adapter.readyState == "Installed" || selectedWallet.adapter.readyState == "Loadable") {
                 var p = await selectedWallet.adapter.connectWallet(connectObj).catch((e) => {
+                    console.log(e);
                     reject(e);
                 });
-                if (!p) resolve(false);
+                if (!p) return resolve(false);
                 this.principalId = p.principalId; this.accountId = p.accountId; this.walletActive = wallet;
                 this.provider = selectedWallet.adapter;
                 this.connectedWalletInfo = { id: selectedWallet.id, icon: selectedWallet.icon, name: selectedWallet.name };

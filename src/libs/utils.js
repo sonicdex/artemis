@@ -16,3 +16,18 @@ export const fromHexString = (hex) => {
         bytes.push(parseInt(hex.substr(c, 2), 16));
     return bytes;
 }
+
+
+export class LocalDStorage {
+    async get(key) {
+        const storedData = localStorage.getItem(key);
+        if (!storedData) return null;
+        return JSON.parse(storedData);
+    }
+    async set(key, value) {
+        localStorage.setItem(key, JSON.stringify(value));
+    }
+    async remove(key) {
+        localStorage.removeItem(key);
+    }
+}

@@ -14,8 +14,8 @@ import { PostMessageTransport } from "@slide-computer/signer-web";
 import { SignerAgent } from "@slide-computer/signer-agent";
 import { createAccountsPermissionScope, Signer } from "@slide-computer/signer";
 
-import { SignerClient } from "@slide-computer/signer-client";
-import { ICRC1_IDL } from '../did'
+
+import { ICRC1_IDL } from '../did'
 
 export const oisyWallet = {
     readyState: "Loadable", url: "https://oisy.com/sign",
@@ -32,6 +32,14 @@ export const oisyWallet = {
                     manageFocus: false,
                 });
                 const signer = new Signer({transport});
+                await signer.requestPermissions([
+                    { method: "icrc27_accounts" },
+                    {
+                      method: "icrc34_delegation",
+                      targets: connectObj.whitelist,
+                    },
+                    { method: "icrc49_call_canister" },
+                  ]);
                 const userPrincipal = (await signer.accounts())[0].owner;
                 const signerAgent = SignerAgent.createSync({
                     signer: signer,

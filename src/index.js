@@ -30,7 +30,7 @@ export const Artemis = class Artemis {
         this._connectObject = connectObj;
         return connectObj;
     }
-    async connect(wallet, connectObj = { whitelist: [], host: HOSTURL }) {
+    async connect(wallet, connectObj = { whitelist: [], host: HOSTURL , delegationTargets:[]} , clcik=false) {
         connectObj = this._cleanUpConnObj(connectObj);
         if (!wallet) return false;
         return new Promise(async (resolve, reject) => {
@@ -38,7 +38,7 @@ export const Artemis = class Artemis {
             if (selectedWallet?.adapter?.init) selectedWallet.adapter.init()
 
             if (selectedWallet.adapter.readyState == "Installed" || selectedWallet.adapter.readyState == "Loadable") {
-                var p = await selectedWallet.adapter.connectWallet(connectObj).catch((e) => {
+                var p = await selectedWallet.adapter.connectWallet(connectObj, clcik).catch((e) => {
                     console.log(e);
                     reject(e);
                 });

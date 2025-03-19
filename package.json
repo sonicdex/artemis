@@ -15,17 +15,16 @@
     "@dfinity/auth-client": "^2.0.0",
     "@dfinity/candid": "^2.0.0",
     "@dfinity/identity": "^2.0.0",
-    "@dfinity/oisy-wallet-signer": "^0.0.3",
     "@dfinity/principal": "^2.0.0",
     "@fort-major/msq-client": "^0.3.4",
     "@fort-major/msq-shared": "^0.3.3",
     "@slide-computer/signer": "^3.11.0",
     "@slide-computer/signer-agent": "^3.11.0",
-    "@slide-computer/signer-storage": "^3.15.0",
     "@slide-computer/signer-web": "^3.11.0",
     "buffer": "^6.0.3",
     "buffer-crc32": "^1.0.0",
-    "crypto-js": "^4.2.0"
+    "crypto-js": "^4.2.0",
+    "zod": "^3.24.2"
   },
   "devDependencies": {
     "webpack": "^5.75.0",

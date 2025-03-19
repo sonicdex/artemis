@@ -12,7 +12,6 @@ const ICP_DECIMAL = 10 ** 8;
 const NNS_CANISTER_ID = 'ryjl3-tyaaa-aaaaa-aaaba-cai';
 const localStorageKey = 'dfinityWallet';
 
-
 export const Artemis = class Artemis {
     accountId = false;
     principalId = false;

@@ -1,5 +1,3 @@
-
-
 // const MAX_PLUG_WHITELIST_NUMBER = 200;
 export const plug = {
     readyState: "NotDetected",
@@ -21,7 +19,8 @@ export const plug = {
             try {
                 if (self.state == 'conneting') return false;
                 self.state = 'conneting';
-                await window?.ic?.plug?.requestConnect(connectObj);
+                if (!isConnected || (isConnected && navigator.userAgentData.mobile))
+                    await window?.ic?.plug?.requestConnect(connectObj);
                 self.principal = window.ic.plug.principalId;
                 self.agent = window.ic.plug.agent;
                 self.getPrincipal = async function () { return await window.ic.plug.getPrincipal() }

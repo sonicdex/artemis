@@ -1,4 +1,4 @@
-import { Actor, HttpAgent } from '@dfinity/agent';
+import {  HttpAgent } from '@dfinity/agent';
 
 import { getAccountIdentifier } from '../libs/identifier-utils';
 import { IC } from "@astrox/sdk-web";
@@ -36,25 +36,19 @@ export const astrox = {
     connectWallet: async function (connectObj = { whitelist: [], host: '' }) {
         var self = this;
         return new Promise(async (resolve, reject) => {
+            if (self.state == 'conneting') resolve(false);;
+            self.state = 'conneting';
             //check app is  in ME App.
             try { await window.icx.init(); } catch (e) { window.icx = false };
-            const isICXReady = window.icx._isReady;
+            const isICXReady = window.icx?._isReady;
             if (isICXReady) {
                 await astroxInit(connectObj.host  , connectObj.whitelist);
-                
                 const isconneted = await window.icx.isConnected();
                 if (!isconneted) {
                     await window.icx.connect({ ...astroxConfig, delegationTargets: connectObj.whitelist, ledgerHost: connectObj.host })
                 }
-
                 var sid = window.icx.wallet.accountId;
                 self.agent =  HttpAgent.createSync({ identity: window.icx.identity, host: connectObj.host });
-
-                // self.createActor = async function (connObj = { canisterId: '', interfaceFactory: false }) {
-                //     if (!connObj.canisterId || !connObj.interfaceFactory) return false;
-                //     return await Actor.createActor(connObj.interfaceFactory, { agent: this.agent, canisterId: connObj.canisterId });
-                // };
-
                 self.createActor = async function (connObj = { canisterId: '', interfaceFactory: false }) {
                     if (!connObj.canisterId || !connObj.interfaceFactory) return false;
                     const actor = await window.icx.createActor(connObj.canisterId, connObj.interfaceFactory);
@@ -62,6 +56,7 @@ export const astrox = {
                 };
                 self.getPrincipal = async function (t1) { return Principal.fromText(window.icx.wallet.principal) };
                 self.disConnectWallet = async function () { await window.icx.disconnect(); }
+                self.state = 'connected';
                 resolve({ accountId: sid, principalId: window.icx.wallet.principal });
 
             } else {
@@ -84,8 +79,8 @@ export const astrox = {
 
                 self.getPrincipal = async function (t1) { return window.ic.astrox.principal };
                 self.disConnectWallet = async function () { await window.ic.astrox.disconnect() }
+                self.state = 'connected';
                 resolve({ accountId: sid, principalId: window.ic.astrox.principal.toString() });
-
             }
         });
     }

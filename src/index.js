@@ -6,11 +6,7 @@ import { BatchTransaction } from './libs/batchTransact'
 
 import { getAccountIdentifier } from './libs/identifier-utils';
 import { Principal } from '@dfinity/principal';
-
-const HOSTURL = "https://icp0.io";
-const ICP_DECIMAL = 10 ** 8;
-const NNS_CANISTER_ID = 'ryjl3-tyaaa-aaaaa-aaaba-cai';
-const localStorageKey = 'dfinityWallet';
+import { NNS_CANISTER_ID , ICP_DECIMAL , HOSTURL , localStorageKey} from './config'
 
 export const Artemis = class Artemis {
     accountId = false;
@@ -35,10 +31,9 @@ export const Artemis = class Artemis {
         return new Promise(async (resolve, reject) => {
             var selectedWallet = this.wallets.find(o => o.id == wallet);
             if (selectedWallet?.adapter?.init) selectedWallet.adapter.init()
-
+                
             if (selectedWallet.adapter.readyState == "Installed" || selectedWallet.adapter.readyState == "Loadable") {
                 var p = await selectedWallet.adapter.connectWallet(connectObj, clcik).catch((e) => {
-                    console.log(e);
                     reject(e);
                 });
                 if (!p) return resolve(false);
@@ -155,6 +150,7 @@ export const initAdapter = async function () {
             if (tries > 10) { clearInterval(s); }
         }, 1000);
     }
+    if(!window.process) window.process ={}
 }
 
 if (window) {

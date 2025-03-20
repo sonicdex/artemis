@@ -33,13 +33,6 @@ export const plug = {
                     }
                     return window.ic.plug.batchTransactions(t1)
                 };
-                window.ic.plug.onExternalDisconnect(async () => {
-                    if (self.state == 'connected') {
-                        if (connectObj?.onConnectionUpdate) {
-                            connectObj?.onConnectionUpdate();
-                        }
-                    }
-                })
                 self.state = 'connected';
                 resolve({ accountId: window.ic.plug.accountId, principalId: window.ic.plug.principalId })
             } catch (e) {

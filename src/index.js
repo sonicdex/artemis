@@ -1,16 +1,12 @@
 import { Actor, HttpAgent, AnonymousIdentity } from '@dfinity/agent';
 import { NNS_IDL } from './did/nns.idl';
-import { walletList } from "./wallets";
+import { walletList, web3Wallets } from "./wallets";
+
 import { BatchTransaction } from './libs/batchTransact'
 
 import { getAccountIdentifier } from './libs/identifier-utils';
 import { Principal } from '@dfinity/principal';
-
-const HOSTURL = "https://icp0.io";
-const ICP_DECIMAL = 10 ** 8;
-const NNS_CANISTER_ID = 'ryjl3-tyaaa-aaaaa-aaaba-cai';
-const localStorageKey = 'dfinityWallet';
-
+import { NNS_CANISTER_ID , ICP_DECIMAL , HOSTURL , localStorageKey} from './config'
 
 export const Artemis = class Artemis {
     accountId = false;
@@ -29,15 +25,18 @@ export const Artemis = class Artemis {
         this._connectObject = connectObj;
         return connectObj;
     }
-    async connect(wallet, connectObj = { whitelist: [], host: HOSTURL }) {
+    async connect(wallet, connectObj = { whitelist: [], host: HOSTURL , delegationTargets:[]} , clcik=false) {
         connectObj = this._cleanUpConnObj(connectObj);
         if (!wallet) return false;
-        try {
+        return new Promise(async (resolve, reject) => {
             var selectedWallet = this.wallets.find(o => o.id == wallet);
-            if (!selectedWallet) return false;
+            if (selectedWallet?.adapter?.init) selectedWallet.adapter.init()
+                
             if (selectedWallet.adapter.readyState == "Installed" || selectedWallet.adapter.readyState == "Loadable") {
-                var p = await selectedWallet.adapter.connectWallet(connectObj);
-                if (!p) return false;
+                var p = await selectedWallet.adapter.connectWallet(connectObj, clcik).catch((e) => {
+                    reject(e);
+                });
+                if (!p) return resolve(false);
                 this.principalId = p.principalId; this.accountId = p.accountId; this.walletActive = wallet;
                 this.provider = selectedWallet.adapter;
                 this.connectedWalletInfo = { id: selectedWallet.id, icon: selectedWallet.icon, name: selectedWallet.name };
@@ -49,10 +48,8 @@ export const Artemis = class Artemis {
             } else if (selectedWallet.adapter.readyState == 'NotDetected') {
                 window.open(selectedWallet.adapter.url, '_blank');
             }
-            return this.principalId;
-        } catch (error) {
-            throw error;
-        }
+            resolve(this.principalId);
+        });
     };
     async disconnect() {
         var res = this.provider.disConnectWallet();
@@ -90,24 +87,24 @@ export const Artemis = class Artemis {
             if (isForced) {
                 const pubAgent = HttpAgent.createSync({ AnonymousIdentity, host: this._connectObject.host });
                 actor = await Actor.createActor(idl, { agent: pubAgent, canisterId: canisterId })
-                if(actor) this.anoncanisterActors[canisterId] = actor;
+                if (actor) this.anoncanisterActors[canisterId] = actor;
             } else if (this.anoncanisterActors[canisterId])
                 actor = this.anoncanisterActors[canisterId]
             else {
                 const pubAgent = HttpAgent.createSync({ AnonymousIdentity, host: this._connectObject.host });
                 actor = await Actor.createActor(idl, { agent: pubAgent, canisterId: canisterId })
-                if(actor)this.anoncanisterActors[canisterId] = actor;
+                if (actor) this.anoncanisterActors[canisterId] = actor;
             }
         } else {
             if (isForced) {
                 actor = await this.provider.createActor({ canisterId: canisterId, interfaceFactory: idl });
-                if(actor) this.canisterActors[canisterId] = actor;
+                if (actor) this.canisterActors[canisterId] = actor;
             }
             else if (this.canisterActors[canisterId]) {
                 actor = this.canisterActors[canisterId];
             } else {
                 actor = await this.provider.createActor({ canisterId: canisterId, interfaceFactory: idl });
-                if(actor)this.canisterActors[canisterId] = actor;
+                if (actor) this.canisterActors[canisterId] = actor;
             }
         }
         return actor;
@@ -137,8 +134,25 @@ export const principalIdFromHex = getAccountIdentifier;
 
 export const ArtemisAdapter = new Artemis({ whitelist: [NNS_CANISTER_ID], host: HOSTURL });
 
-if (window) {
+export const initAdapter = async function () {
     window.artemis = Artemis;
     window.artemis.BatchTransact = BatchTransaction;
     window.artemis.dfinity = { AnonymousIdentity, Principal }
+    window.onload = function () {
+        if (window.ic && window.ic.plug) { window.ic.plug.init(); }
+        if (window.ic.bitfinityWallet) web3Wallets.bitfinity.readyState = 'Installed';
+        if (window.ic.plug) web3Wallets.plug.readyState = 'Installed';
+        var tries = 0;
+        const s = setInterval(() => {
+            if (window.ic.plug) { web3Wallets.plug.readyState = 'Installed'; }
+            if (window.ic.bitfinityWallet) { web3Wallets.bitfinity.readyState = 'Installed' };
+            tries++;
+            if (tries > 10) { clearInterval(s); }
+        }, 1000);
+    }
+    if(!window.process) window.process ={}
+}
+
+if (window) {
+    initAdapter();
 }

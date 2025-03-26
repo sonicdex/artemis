@@ -117,7 +117,7 @@ export const BatchTransaction = class BatchTransaction {
                 self.state = 'error';
                 return false;
             }
-        } else if (['bitfinity','plug', 'stoic', 'dfinity', 'astrox', 'metamask', 'nfid'].includes(this._adapterObj.walletActive)) {
+        } else if (['bitfinity','plug', 'stoic', 'dfinity', 'astrox', 'metamask', 'nfid', 'oisyWallet'].includes(this._adapterObj.walletActive)) {
             try {
                 for (const trxStepItem of self.trxArray) {
                     if (self.state == 'error' || self.state == 'done') break;
